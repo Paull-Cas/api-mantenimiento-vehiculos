@@ -3,7 +3,7 @@ spring:
     name: api.mantenimiento.vehiculos
 
   datasource:
-    url: jdbc:mysql://localhost:3306/bd_mantenimiento_vehiculos
+    url: jdbc:mysql://localhost:3306/bd_mantenimiento_vehiculos?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password: ${SPRING_DATASOURCE_PASSWORD}
 
