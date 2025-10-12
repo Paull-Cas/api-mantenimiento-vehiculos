@@ -30,6 +30,8 @@ public class Vehiculo {
     @Column(unique = true)
     private String numeroSerie;
 
+    private int kilometraje;
+
     @ManyToOne
     private Cliente propietario;
 
