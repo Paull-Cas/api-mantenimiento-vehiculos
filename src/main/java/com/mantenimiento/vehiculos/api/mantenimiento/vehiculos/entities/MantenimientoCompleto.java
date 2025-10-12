@@ -1,4 +1,4 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities;
 
-public class MantenimientoCompleto {
+public class MantenimientoCompleto extends Mantenimiento{
 }
