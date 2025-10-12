@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: api.mantenimiento.vehiculos
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/bd_mantenimiento_vehiculos
+    username: root
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
