@@ -1,17 +1,14 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class ClienteRequest {
     private String telefono;
     private String correoElectronico;

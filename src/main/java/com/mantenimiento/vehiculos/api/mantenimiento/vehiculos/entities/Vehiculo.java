@@ -36,5 +36,5 @@ public class Vehiculo {
     private Cliente propietario;
 
     @OneToMany(mappedBy = "vehiculo")
-    private List<MantenimientosRealizados> mantenimientosRealizados;
+    private List<OrdenMantenimiento> mantenimientos;
 }
