@@ -1,10 +1,9 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.response.VehiculoDto;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Cliente;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.MantenimientoMappers;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.VehiculoMappers;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.VehiculoRepositorio;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +11,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
 @Service
 @Transactional
 @Slf4j
-public class MantenimientoServiceImpl implements MantenimientoService{
+public class VehiculoServiceImpl implements VehiculoService {
 
     @Autowired
     VehiculoRepositorio vehiculoRepositorio;
     @Autowired
-    MantenimientoMappers mantenimientoMappers;
+    VehiculoMappers VehiculoService;
 
     /*@Override
     public Vehiculo saveCliente(Vehiculo vehiculo) {
@@ -36,24 +34,24 @@ public class MantenimientoServiceImpl implements MantenimientoService{
     @Override
     public VehiculoDto saveVehiculo(VehiculoDto vehiculoDto) {
         log.info("Guardando vehiculo");
-        Vehiculo vehiculo = mantenimientoMappers.mapearVheiculoDto(vehiculoDto);
+        Vehiculo vehiculo = VehiculoService.mapearVheiculoDto(vehiculoDto);
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
-        return mantenimientoMappers.mapearVheiculo(vheculoGuardado);
+        return VehiculoService.mapearVheiculo(vheculoGuardado);
     }
 
     @Override
     public VehiculoDto getVehiculo(Long vehiculoId) throws VehiculoNoEncontradoExcepcion {
         Vehiculo vehiculo = vehiculoRepositorio.findById(vehiculoId)
                 .orElseThrow(() -> new VehiculoNoEncontradoExcepcion("Vehiculo no encontrado"));
-        return mantenimientoMappers.mapearVheiculo(vehiculo);
+        return VehiculoService.mapearVheiculo(vehiculo);
     }
 
     @Override
     public VehiculoDto updateVehiculo(VehiculoDto vehiculoDto) throws VehiculoNoEncontradoExcepcion {
         log.info("Vehiculo Actualizado");
-        Vehiculo vehiculo = mantenimientoMappers.mapearVheiculoDto(vehiculoDto);
+        Vehiculo vehiculo = VehiculoService.mapearVheiculoDto(vehiculoDto);
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
-        return mantenimientoMappers.mapearVheiculo(vheculoGuardado);
+        return VehiculoService.mapearVheiculo(vheculoGuardado);
 
     }
 
@@ -70,7 +68,7 @@ public class MantenimientoServiceImpl implements MantenimientoService{
     public List<VehiculoDto> listVehiculos() {
         List<Vehiculo> vehiculos = vehiculoRepositorio.findAll();
         List<VehiculoDto> vehiculoDtos = vehiculos.stream()
-                .map(vehiculo -> mantenimientoMappers.mapearVheiculo(vehiculo))
+                .map(vehiculo -> VehiculoService.mapearVheiculo(vehiculo))
                 .collect(Collectors.toList());
         return vehiculoDtos;
 
@@ -80,7 +78,7 @@ public class MantenimientoServiceImpl implements MantenimientoService{
     public List<VehiculoDto> searchVehiculos(String keyword) {
         List<Vehiculo> vehiculos = vehiculoRepositorio.searchVehiculos(keyword);
         List<VehiculoDto> vehiculoDtos = vehiculos.stream()
-                .map(vehiculo -> mantenimientoMappers.mapearVheiculo(vehiculo))
+                .map(vehiculo -> VehiculoService.mapearVheiculo(vehiculo))
                 .collect(Collectors.toList());
         return vehiculoDtos;
     }

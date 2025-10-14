@@ -1,12 +1,11 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.response.VehiculoDto;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
 
 import java.util.List;
 
-public interface MantenimientoService {
+public interface VehiculoService {
 
     //Vehiculo saveVehiculo(Vehiculo vehiculo);
 

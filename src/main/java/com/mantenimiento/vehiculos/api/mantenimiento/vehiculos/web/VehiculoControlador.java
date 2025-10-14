@@ -2,7 +2,7 @@ package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.Web;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.response.VehiculoDto;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.MantenimientoService;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.VehiculoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,37 +13,37 @@ import java.util.List;
 public class VehiculoControlador {
 
     @Autowired
-    private MantenimientoService mantenimientoService;
+    private VehiculoService VehiculoService;
 
     @GetMapping("/Vehiculos")
     public List<VehiculoDto> listarVehiculos() {
-        return mantenimientoService.listVehiculos();
+        return VehiculoService.listVehiculos();
     }
 
     @GetMapping("/Vehiculo/{id}")
     public VehiculoDto obtenerVehiculoPorId(@PathVariable(name = "id") Long id) throws VehiculoNoEncontradoExcepcion {
-        return mantenimientoService.getVehiculo(id);
+        return VehiculoService.getVehiculo(id);
     }
 
     @PostMapping("/Vehiculo")
     public VehiculoDto guardarVehiculo(@RequestBody VehiculoDto vehiculoDto) {
-        return mantenimientoService.saveVehiculo(vehiculoDto);
+        return VehiculoService.saveVehiculo(vehiculoDto);
     }
 
     @PutMapping("/Vehiculo/{id}")
     public VehiculoDto actualizarVehiculo(@PathVariable(name = "id") Long id, @RequestBody VehiculoDto vehiculoDto) throws VehiculoNoEncontradoExcepcion {
         vehiculoDto.setId(id);
-        return mantenimientoService.updateVehiculo(vehiculoDto);
+        return VehiculoService.updateVehiculo(vehiculoDto);
     }
 
     @DeleteMapping("/Vehiculo/{id}")
     public void eliminarVehiculo(@PathVariable(name = "id") Long id) throws VehiculoNoEncontradoExcepcion {
-        mantenimientoService.deleteVehiculo(id);
+        VehiculoService.deleteVehiculo(id);
     }
 
     @GetMapping("/Vehiculos/search")
     public List<VehiculoDto> buscarVehiculos(@RequestParam(name = "keyword", defaultValue = "") String keyword){
-        return mantenimientoService.searchVehiculos("%" + keyword + "%");
+        return VehiculoService.searchVehiculos("%" + keyword + "%");
     }
 
 

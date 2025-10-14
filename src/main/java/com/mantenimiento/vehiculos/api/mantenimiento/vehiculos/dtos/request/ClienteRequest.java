@@ -1,4 +1,4 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request;
+package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.request;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

@@ -1,9 +1,10 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request;
+package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 @Data
 @AllArgsConstructor
