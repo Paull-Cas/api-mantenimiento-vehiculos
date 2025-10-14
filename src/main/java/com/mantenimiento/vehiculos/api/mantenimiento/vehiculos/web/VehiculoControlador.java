@@ -1,4 +1,4 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.Web;
+package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.web;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.response.VehiculoDto;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;

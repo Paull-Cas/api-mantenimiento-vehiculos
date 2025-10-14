@@ -6,14 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @DiscriminatorValue("natural")
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-
+@SuperBuilder
 public class ClienteNatural extends Cliente{
     private String nombre;
     private String apellido;
