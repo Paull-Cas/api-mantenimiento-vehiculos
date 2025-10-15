@@ -1,4 +1,0 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities;
-
-public class MantenimientoSimple extends Mantenimiento{
-}
