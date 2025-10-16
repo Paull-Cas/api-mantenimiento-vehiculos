@@ -7,6 +7,5 @@ import java.util.Date;
 @Data
 public class MantenimientoPreventivoResponseDTO extends MantenimientoResponseDTO {
     private int kilometrajeRecomendado;
-    private Date proximoMantenimientoSugerido;
     private boolean esCambioDeComponente;
 }

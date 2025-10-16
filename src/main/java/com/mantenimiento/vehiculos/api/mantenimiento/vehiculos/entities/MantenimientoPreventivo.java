@@ -14,9 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @DiscriminatorValue("PREVENTIVO")
 public class MantenimientoPreventivo extends Mantenimiento {
+
     private int kilometrajeRecomendado;
-
-    private Date proximoMantenimientoSugerido;
-
     private boolean esCambioDeComponente;
 }

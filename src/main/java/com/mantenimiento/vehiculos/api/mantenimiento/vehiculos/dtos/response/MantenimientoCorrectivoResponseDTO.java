@@ -5,6 +5,5 @@ import lombok.Data;
 @Data
 public class MantenimientoCorrectivoResponseDTO extends MantenimientoResponseDTO {
     private String diagnosticoInicial;
-    private String causaDeFallaDetectada;
     private boolean esReparacionUrgente;
 }
