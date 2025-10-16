@@ -1,6 +1,5 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.web;
 
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.ActualizarEstadoMantenimientoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoCorrectivoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoPreventivoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponseDTO;
@@ -14,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/mantenimiento-vehiculos")
 public class MantenimientoControlador {
-
+/*
     @Autowired
     private MantenimientoService mantenimientoService;
 
@@ -44,5 +43,5 @@ public class MantenimientoControlador {
     @DeleteMapping("/{idMantenimiento}")
     public void eliminarMantenimiento(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {
         mantenimientoService.deleteMantenimiento(idMantenimiento);
-    }
+    }*/
 }
