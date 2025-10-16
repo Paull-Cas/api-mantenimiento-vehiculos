@@ -24,10 +24,10 @@ public class OrdenMantenimiento {
     private String numeroOrden;
 
     @ManyToOne
-    private Vehiculo vehiculo;
+    private Mantenimiento mantenimiento;
 
     @ManyToOne
-    private Mantenimiento mantenimiento;
+    private Vehiculo vehiculo;
 
     private LocalDate fechaIngreso;
 

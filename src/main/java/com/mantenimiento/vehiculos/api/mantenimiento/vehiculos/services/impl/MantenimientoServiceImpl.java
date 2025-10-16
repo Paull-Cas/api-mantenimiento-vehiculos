@@ -85,11 +85,12 @@ public class MantenimientoServiceImpl implements MantenimientoService {
     public List<MantenimientoResponseDTO> getMantenimientosByOrdenId(Long ordenId) throws OrdenMantenimientoNoEncontradaExcepcion {
         log.info("Buscando todos los mantenimientos para la orden de mantenimiento solicitada");
 
-        List<Mantenimiento> mantenimientos = mantenimientoRepositorio.findByOrdenMantenimientoId(ordenId);
+      /*  List<Mantenimiento> mantenimientos = mantenimientoRepositorio.findByOrdenMantenimientoId(ordenId);
 
         return mantenimientos.stream()
                 .map(mantenimientoMapper::mapearMantenimiento)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+        return List.of();
     }
 
     @Override

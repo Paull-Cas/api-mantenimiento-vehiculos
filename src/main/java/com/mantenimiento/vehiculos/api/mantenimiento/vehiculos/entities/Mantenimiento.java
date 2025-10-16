@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,7 +36,6 @@ public class Mantenimiento {
     @Enumerated(EnumType.STRING)
     private EstadoMantenimiento estadoMantenimiento;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ordenMantenimientoId", nullable = false)
-    private OrdenMantenimiento ordenMantenimiento;
+    @OneToMany(mappedBy = "mantenimiento", fetch = FetchType.LAZY)
+    private List<OrdenMantenimiento> ordenesMantenimiento;
 }
