@@ -5,6 +5,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.Veh
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.VehiculoMappers;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.ClienteRepositorio;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.VehiculoRepositorio;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.VehiculoService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,45 +16,41 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 @Transactional
 @Slf4j
 public class VehiculoServiceImpl implements VehiculoService {
 
     @Autowired
-    VehiculoRepositorio vehiculoRepositorio;
-    @Autowired
-    VehiculoMappers VehiculoService;
+    private VehiculoRepositorio vehiculoRepositorio;
 
-    /*@Override
-    public Vehiculo saveCliente(Vehiculo vehiculo) {
-        log.info("Vehiculo guardado");
-        Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
-        return vheculoGuardado;
-    }*/
+    @Autowired
+    private VehiculoMappers vehiculoMapper;  // Cambié el nombre a "vehiculoMapper" para hacerlo consistente
+
+    @Autowired
+    private ClienteRepositorio clienteRepo;
 
     @Override
     public VehiculoResponse saveVehiculo(VehiculoRequest vehiculoDto) {
         log.info("Guardando vehiculo");
-        Vehiculo vehiculo = VehiculoService.mapearVheiculoDto(vehiculoDto);
+        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto);  // Usando vehiculoMapper
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
-        return VehiculoService.mapearVheiculo(vheculoGuardado);
+        return vehiculoMapper.mapearVheiculo(vheculoGuardado);  // Usando vehiculoMapper
     }
 
     @Override
     public VehiculoResponse getVehiculo(Long vehiculoId) throws VehiculoNoEncontradoExcepcion {
         Vehiculo vehiculo = vehiculoRepositorio.findById(vehiculoId)
                 .orElseThrow(() -> new VehiculoNoEncontradoExcepcion("Vehiculo no encontrado"));
-        return VehiculoService.mapearVheiculo(vehiculo);
+        return vehiculoMapper.mapearVheiculo(vehiculo);  // Usando vehiculoMapper
     }
 
     @Override
-    public VehiculoResponse updateVehiculo(Long id,  VehiculoRequest vehiculoDto) throws VehiculoNoEncontradoExcepcion {
+    public VehiculoResponse updateVehiculo(Long id, VehiculoRequest vehiculoDto) throws VehiculoNoEncontradoExcepcion {
         log.info("Vehiculo Actualizado");
-        Vehiculo vehiculo = VehiculoService.mapearVheiculoDto(vehiculoDto);
+        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto);  // Usando vehiculoMapper
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
-        return VehiculoService.mapearVheiculo(vheculoGuardado);
+        return vehiculoMapper.mapearVheiculo(vheculoGuardado);  // Usando vehiculoMapper
     }
 
     @Override
@@ -69,18 +66,24 @@ public class VehiculoServiceImpl implements VehiculoService {
     public List<VehiculoResponse> listVehiculos() {
         List<Vehiculo> vehiculos = vehiculoRepositorio.findAll();
         List<VehiculoResponse> vehiculoDtos = vehiculos.stream()
-                .map(vehiculo -> VehiculoService.mapearVheiculo(vehiculo))
+                .map(vehiculoMapper::mapearVheiculo)  // Usando vehiculoMapper
                 .collect(Collectors.toList());
         return vehiculoDtos;
-
     }
 
     @Override
     public List<VehiculoResponse> searchVehiculos(String keyword) {
         List<Vehiculo> vehiculos = vehiculoRepositorio.searchVehiculos(keyword);
         List<VehiculoResponse> vehiculoDtos = vehiculos.stream()
-                .map(vehiculo -> VehiculoService.mapearVheiculo(vehiculo))
+                .map(vehiculoMapper::mapearVheiculo)  // Usando vehiculoMapper
                 .collect(Collectors.toList());
         return vehiculoDtos;
+    }
+
+    @Override
+    public List<VehiculoResponse> listByCliente(Long clienteId) {
+        return vehiculoRepositorio.findByCliente_Id(clienteId).stream()
+                .map(vehiculoMapper::mapearVheiculo)  // Usando vehiculoMapper
+                .collect(Collectors.toList());
     }
 }

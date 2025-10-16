@@ -22,4 +22,5 @@ public interface VehiculoService {
 
     List<VehiculoResponse> searchVehiculos(String keyword);
 
+    List<VehiculoResponse> listByCliente(Long clienteId);
 }
