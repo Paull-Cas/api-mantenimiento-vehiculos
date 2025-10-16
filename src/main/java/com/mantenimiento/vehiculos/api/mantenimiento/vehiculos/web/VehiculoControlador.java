@@ -1,6 +1,8 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.web;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.response.VehiculoDto;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.VehiculoRequest;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.VehiculoResponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.VehiculoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,24 +18,23 @@ public class VehiculoControlador {
     private VehiculoService VehiculoService;
 
     @GetMapping("/Vehiculos")
-    public List<VehiculoDto> listarVehiculos() {
+    public List<VehiculoResponse> listarVehiculos() {
         return VehiculoService.listVehiculos();
     }
 
     @GetMapping("/Vehiculo/{id}")
-    public VehiculoDto obtenerVehiculoPorId(@PathVariable(name = "id") Long id) throws VehiculoNoEncontradoExcepcion {
+    public VehiculoResponse obtenerVehiculoPorId(@PathVariable(name = "id") Long id) throws VehiculoNoEncontradoExcepcion {
         return VehiculoService.getVehiculo(id);
     }
 
     @PostMapping("/Vehiculo")
-    public VehiculoDto guardarVehiculo(@RequestBody VehiculoDto vehiculoDto) {
+    public VehiculoResponse guardarVehiculo(@RequestBody VehiculoRequest vehiculoDto) {
         return VehiculoService.saveVehiculo(vehiculoDto);
     }
 
     @PutMapping("/Vehiculo/{id}")
-    public VehiculoDto actualizarVehiculo(@PathVariable(name = "id") Long id, @RequestBody VehiculoDto vehiculoDto) throws VehiculoNoEncontradoExcepcion {
-        vehiculoDto.setId(id);
-        return VehiculoService.updateVehiculo(vehiculoDto);
+    public VehiculoResponse actualizarVehiculo(@PathVariable(name = "id") Long id, @RequestBody VehiculoRequest vehiculoDto) throws VehiculoNoEncontradoExcepcion {
+        return VehiculoService.updateVehiculo(id, vehiculoDto);
     }
 
     @DeleteMapping("/Vehiculo/{id}")
@@ -42,9 +43,7 @@ public class VehiculoControlador {
     }
 
     @GetMapping("/Vehiculos/search")
-    public List<VehiculoDto> buscarVehiculos(@RequestParam(name = "keyword", defaultValue = "") String keyword){
+    public List<VehiculoResponse> buscarVehiculos(@RequestParam(name = "keyword", defaultValue = "") String keyword){
         return VehiculoService.searchVehiculos("%" + keyword + "%");
     }
-
-
 }

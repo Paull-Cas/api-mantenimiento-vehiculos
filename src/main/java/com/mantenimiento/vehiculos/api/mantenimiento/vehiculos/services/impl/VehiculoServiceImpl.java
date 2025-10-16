@@ -1,6 +1,8 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.impl;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.response.VehiculoDto;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.VehiculoRequest;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.VehiculoResponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.VehiculoMappers;
@@ -33,7 +35,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     }*/
 
     @Override
-    public VehiculoDto saveVehiculo(VehiculoDto vehiculoDto) {
+    public VehiculoResponse saveVehiculo(VehiculoRequest vehiculoDto) {
         log.info("Guardando vehiculo");
         Vehiculo vehiculo = VehiculoService.mapearVheiculoDto(vehiculoDto);
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
@@ -41,19 +43,18 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
-    public VehiculoDto getVehiculo(Long vehiculoId) throws VehiculoNoEncontradoExcepcion {
+    public VehiculoResponse getVehiculo(Long vehiculoId) throws VehiculoNoEncontradoExcepcion {
         Vehiculo vehiculo = vehiculoRepositorio.findById(vehiculoId)
                 .orElseThrow(() -> new VehiculoNoEncontradoExcepcion("Vehiculo no encontrado"));
         return VehiculoService.mapearVheiculo(vehiculo);
     }
 
     @Override
-    public VehiculoDto updateVehiculo(VehiculoDto vehiculoDto) throws VehiculoNoEncontradoExcepcion {
+    public VehiculoResponse updateVehiculo(Long id,  VehiculoRequest vehiculoDto) throws VehiculoNoEncontradoExcepcion {
         log.info("Vehiculo Actualizado");
         Vehiculo vehiculo = VehiculoService.mapearVheiculoDto(vehiculoDto);
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
         return VehiculoService.mapearVheiculo(vheculoGuardado);
-
     }
 
     @Override
@@ -66,9 +67,9 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
-    public List<VehiculoDto> listVehiculos() {
+    public List<VehiculoResponse> listVehiculos() {
         List<Vehiculo> vehiculos = vehiculoRepositorio.findAll();
-        List<VehiculoDto> vehiculoDtos = vehiculos.stream()
+        List<VehiculoResponse> vehiculoDtos = vehiculos.stream()
                 .map(vehiculo -> VehiculoService.mapearVheiculo(vehiculo))
                 .collect(Collectors.toList());
         return vehiculoDtos;
@@ -76,9 +77,9 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
-    public List<VehiculoDto> searchVehiculos(String keyword) {
+    public List<VehiculoResponse> searchVehiculos(String keyword) {
         List<Vehiculo> vehiculos = vehiculoRepositorio.searchVehiculos(keyword);
-        List<VehiculoDto> vehiculoDtos = vehiculos.stream()
+        List<VehiculoResponse> vehiculoDtos = vehiculos.stream()
                 .map(vehiculo -> VehiculoService.mapearVheiculo(vehiculo))
                 .collect(Collectors.toList());
         return vehiculoDtos;
