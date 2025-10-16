@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MantenimientoMapper {
+    /*
     public MantenimientoPreventivo mapearMantenimientoPreventivoRequestDTO(MantenimientoPreventivoRequestDTO mantenimientoPreventivoRequestDTO){
         MantenimientoPreventivo mantenimientoPreventivo = new MantenimientoPreventivo();
         BeanUtils.copyProperties(mantenimientoPreventivoRequestDTO, mantenimientoPreventivo);
@@ -50,5 +51,5 @@ public class MantenimientoMapper {
             return mapearMantenimientoCorrectivo((MantenimientoCorrectivo) mantenimiento);
         }
         throw new IllegalArgumentException("Tipo de Mantenimiento desconocido: " + mantenimiento.getClass().getName());
-    }
+    }*/
 }

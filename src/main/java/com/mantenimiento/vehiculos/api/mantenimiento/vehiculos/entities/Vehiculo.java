@@ -33,7 +33,7 @@ public class Vehiculo {
     private int kilometraje;
 
     @ManyToOne
-    private Cliente propietario;
+    private Cliente cliente;
 
     @OneToMany(mappedBy = "vehiculo")
     private List<OrdenMantenimiento> mantenimientos;

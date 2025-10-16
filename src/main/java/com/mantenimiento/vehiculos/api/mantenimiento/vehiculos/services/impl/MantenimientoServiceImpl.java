@@ -40,7 +40,7 @@ public class MantenimientoServiceImpl implements MantenimientoService {
 
     @Override
     public MantenimientoResponseDTO saveMantenimientoPreventivo(MantenimientoPreventivoRequestDTO mantenimientoPreventivoRequestDTO) throws OrdenMantenimientoNoEncontradaExcepcion {
-        log.info("Guardar mantenimiento preventivo...");
+        /*log.info("Guardar mantenimiento preventivo...");
         OrdenMantenimiento ordenMantenimiento = ordenMantenimientoRepositorio.findById(mantenimientoPreventivoRequestDTO.getOrdenMantenimientoId()).orElse(null);
         if(ordenMantenimiento == null){
             throw new OrdenMantenimientoNoEncontradaExcepcion("Orden de mantenimiento no encontrada");
@@ -52,12 +52,13 @@ public class MantenimientoServiceImpl implements MantenimientoService {
         mantenimientoPreventivo.setFechaRegistro(new Date());
 
         MantenimientoPreventivo mantPreventivoBD = mantenimientoRepositorio.save(mantenimientoPreventivo);
-        return mantenimientoMapper.mapearMantenimiento(mantPreventivoBD);
+        return mantenimientoMapper.mapearMantenimiento(mantPreventivoBD);*/
+        return null;
     }
 
     @Override
     public MantenimientoResponseDTO saveMantenimientoCorrectivo(MantenimientoCorrectivoRequestDTO mantenimientoCorrectivoRequestDTO) throws OrdenMantenimientoNoEncontradaExcepcion {
-        log.info("Guardar mantenimiento correctivo...");
+        /*log.info("Guardar mantenimiento correctivo...");
         OrdenMantenimiento ordenMantenimiento = ordenMantenimientoRepositorio.findById(mantenimientoCorrectivoRequestDTO.getOrdenMantenimientoId()).orElse(null);
         if(ordenMantenimiento == null){
             throw new OrdenMantenimientoNoEncontradaExcepcion("Orden de mantenimiento no encontrada");
@@ -69,16 +70,18 @@ public class MantenimientoServiceImpl implements MantenimientoService {
         mantenimientoCorrectivo.setFechaRegistro(new Date());
 
         MantenimientoCorrectivo mantCorrectivoBD = mantenimientoRepositorio.save(mantenimientoCorrectivo);
-        return mantenimientoMapper.mapearMantenimiento(mantCorrectivoBD);
+        return mantenimientoMapper.mapearMantenimiento(mantCorrectivoBD);*/
+        return null;
     }
 
     @Override
     public MantenimientoResponseDTO getMantenimientoById(Long mantenimientoId) throws MantenimientoNoEncontradoExcepcion {
-        log.info("Buscando mantenimiento con ID: {}", mantenimientoId);
+        /*log.info("Buscando mantenimiento con ID: {}", mantenimientoId);
         Mantenimiento mantenimiento = mantenimientoRepositorio.findById(mantenimientoId)
                 .orElseThrow(() -> new MantenimientoNoEncontradoExcepcion("Mantenimiento con ID " + mantenimientoId + " no encontrado."));
 
-        return mantenimientoMapper.mapearMantenimiento(mantenimiento);
+        return mantenimientoMapper.mapearMantenimiento(mantenimiento);*/
+        return null;
     }
 
     @Override
@@ -101,7 +104,8 @@ public class MantenimientoServiceImpl implements MantenimientoService {
         mantenimiento.setEstadoMantenimiento(actualizarEstadoMantenimientoRequestDTO.getNuevoEstado());
         Mantenimiento mantenimientoActualizado = mantenimientoRepositorio.save(mantenimiento);
 
-        return mantenimientoMapper.mapearMantenimiento(mantenimientoActualizado);
+        /*return mantenimientoMapper.mapearMantenimiento(mantenimientoActualizado);*/
+        return null;
     }
 
     @Override
