@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MantenimientoRepositorio extends JpaRepository<Mantenimiento, Long> {
-    
+
 }
