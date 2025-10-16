@@ -1,4 +1,12 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response;
 
-public class MantenimientoPreventivoResponseDTO {
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
+public class MantenimientoPreventivoResponseDTO extends MantenimientoResponseDTO {
+    private int kilometrajeRecomendado;
+    private Date proximoMantenimientoSugerido;
+    private boolean esCambioDeComponente;
 }

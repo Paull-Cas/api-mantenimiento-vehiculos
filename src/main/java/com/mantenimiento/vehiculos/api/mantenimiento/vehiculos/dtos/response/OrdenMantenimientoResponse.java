@@ -1,9 +1,6 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response;
 
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Mantenimiento;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.EstadoOrdenMantenimiento;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

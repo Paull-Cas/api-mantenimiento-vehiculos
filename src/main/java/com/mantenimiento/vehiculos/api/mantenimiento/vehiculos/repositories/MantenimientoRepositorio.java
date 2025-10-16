@@ -1,4 +1,9 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories;
 
-public interface MantenimientoRepositorio {
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Mantenimiento;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface MantenimientoRepositorio extends JpaRepository<Mantenimiento, Long> {
 }

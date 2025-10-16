@@ -1,7 +1,8 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services;
+package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.impl;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.OrdenMantenimientoRequest;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.OrdenMantenimientoResponse;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.OrdenMantenimientoService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

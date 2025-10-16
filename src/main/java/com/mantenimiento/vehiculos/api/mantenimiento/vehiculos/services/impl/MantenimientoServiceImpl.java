@@ -1,4 +1,4 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services;
+package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.impl;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.ActualizarEstadoMantenimientoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoCorrectivoRequestDTO;
@@ -14,6 +14,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.OrdenM
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.MantenimientoMapper;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.MantenimientoRepositorio;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.OrdenMantenimientoRepositorio;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.MantenimientoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

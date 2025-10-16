@@ -1,4 +1,40 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities;
 
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.EstadoMantenimiento;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.TipoMantenimiento;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TIPO_SERVICIO", length = 12)
 public class Mantenimiento {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private TipoMantenimiento tipoMantenimiento;
+
+    private String descripcion;
+
+    private double costo;
+
+    private BigDecimal tiempoEmpleadoHoras;
+
+    private Date fechaRegistro;
+
+    @Enumerated(EnumType.STRING)
+    private EstadoMantenimiento estadoMantenimiento;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ordenMantenimientoId", nullable = false)
+    private OrdenMantenimiento ordenMantenimiento;
 }

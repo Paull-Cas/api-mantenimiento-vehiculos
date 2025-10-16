@@ -1,4 +1,15 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities;
 
-public class MantenimientoPreventivo {
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@DiscriminatorValue("PREVENTIVO")
+public class MantenimientoPreventivo extends Mantenimiento {
 }

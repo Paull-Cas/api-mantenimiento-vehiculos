@@ -1,4 +1,4 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services;
+package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.impl;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.ClienteJuridicoRequest;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.ClienteNaturalRequest;
@@ -6,6 +6,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.Cli
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.ClienteNaturalResponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.ClienteResponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.ClienteNoEncontradoExcepcion;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.ClienteService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
