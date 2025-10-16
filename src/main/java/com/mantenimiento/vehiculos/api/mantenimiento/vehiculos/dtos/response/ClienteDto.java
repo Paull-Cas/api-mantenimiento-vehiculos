@@ -1,4 +1,4 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.response;
+package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response;
 
 public class ClienteDto {
 }

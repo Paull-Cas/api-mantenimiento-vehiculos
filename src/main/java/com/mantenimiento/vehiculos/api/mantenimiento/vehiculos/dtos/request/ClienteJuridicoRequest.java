@@ -1,5 +1,6 @@
-package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.DTOs.request;
+package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request;
 
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.ClienteRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
