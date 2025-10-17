@@ -6,6 +6,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.Man
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.MantenimientoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.MantenimientoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,35 +14,38 @@ import java.util.List;
 @RestController
 @RequestMapping("api/mantenimiento-vehiculos")
 public class MantenimientoControlador {
-/*
+
     @Autowired
     private MantenimientoService mantenimientoService;
 
-    @PostMapping("/mantenimiento-preventivo")
-    public MantenimientoResponseDTO crearMantenimientoPreventivo(@RequestBody MantenimientoPreventivoRequestDTO requestDTO){
-        return mantenimientoService.saveMantenimientoPreventivo(requestDTO);
-    }
-    @PostMapping("/mantenimiento-correctivo")
-    public MantenimientoResponseDTO crearMantenimientoCorrectivo(@RequestBody MantenimientoCorrectivoRequestDTO requestDTO){
-        return mantenimientoService.saveMantenimientoCorrectivo(requestDTO);
-    }
 
     @GetMapping("/{idMantenimiento}")
     public MantenimientoResponseDTO getMantenimientoPorId(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {
-        return mantenimientoService.getMantenimientoById(idMantenimiento);
+        return mantenimientoService.getMantenimientoPorId(idMantenimiento);
     }
-    @GetMapping("/por-orden/{idOrden}")
-    public List<MantenimientoResponseDTO> listarMantenimientoPorOrden(@PathVariable Long ordenId){
-        return mantenimientoService.getMantenimientosByOrdenId(ordenId);
+    @GetMapping
+    public List<MantenimientoResponseDTO> getMantenimientos() {
+        return mantenimientoService.getTodosLosMantenimientos();
     }
-
-    @PatchMapping("/{idMantenimiento}/estado")
-    public MantenimientoResponseDTO actualizarEstadoMantenimiento(@PathVariable  Long idMantenimiento, @RequestBody ActualizarEstadoMantenimientoRequestDTO requestDTO) throws MantenimientoNoEncontradoExcepcion {
-        return mantenimientoService.updateEstadoMantenimiento(idMantenimiento, requestDTO);
+    @PostMapping("/preventivo")
+    public MantenimientoResponseDTO crearMantenimientoPreventivo(@RequestBody MantenimientoPreventivoRequestDTO mantPrevDTO){
+        return mantenimientoService.saveMantenimientoPreventivo(mantPrevDTO);
+    }
+    @PostMapping("/correctivo")
+    public MantenimientoResponseDTO crearMantenimientoCorrectivo(@RequestBody MantenimientoCorrectivoRequestDTO mantCorrecDTO){
+        return mantenimientoService.saveMantenimientoCorrectivo(mantCorrecDTO);
+    }
+    @PutMapping("/correctivo/{idMantenimiento}")
+    public MantenimientoResponseDTO actualizarMantenimientoCorrectivo(@PathVariable Long idMantenimiento, @RequestBody MantenimientoCorrectivoRequestDTO mantCorrecDTO) throws MantenimientoNoEncontradoExcepcion{
+        return mantenimientoService.updateMantenimientoCorrectivo(idMantenimiento,mantCorrecDTO);
+    }
+    @PutMapping("/preventivo/{idMantenimiento}")
+    public MantenimientoResponseDTO actualizarMantenimientoPreventivo(@PathVariable Long idMantenimiento, @RequestBody MantenimientoPreventivoRequestDTO mantPrevenDTO) throws MantenimientoNoEncontradoExcepcion{
+        return mantenimientoService.updateMantenimientoPreventivo(idMantenimiento,mantPrevenDTO);
     }
 
     @DeleteMapping("/{idMantenimiento}")
     public void eliminarMantenimiento(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {
         mantenimientoService.deleteMantenimiento(idMantenimiento);
-    }*/
+    }
 }
