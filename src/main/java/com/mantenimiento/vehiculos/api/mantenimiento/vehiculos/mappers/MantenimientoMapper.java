@@ -13,43 +13,39 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MantenimientoMapper {
-    /*
-    public MantenimientoPreventivo mapearMantenimientoPreventivoRequestDTO(MantenimientoPreventivoRequestDTO mantenimientoPreventivoRequestDTO){
+
+    public MantenimientoPreventivo mapearDeMantPreventivoRequest(MantenimientoPreventivoRequestDTO requestDTO){
         MantenimientoPreventivo mantenimientoPreventivo = new MantenimientoPreventivo();
-        BeanUtils.copyProperties(mantenimientoPreventivoRequestDTO, mantenimientoPreventivo);
+        BeanUtils.copyProperties(requestDTO, mantenimientoPreventivo);
         return mantenimientoPreventivo;
     }
 
-    public MantenimientoCorrectivo mapearMantenimientoCorrectivoRequestDTO(MantenimientoCorrectivoRequestDTO mantenimientoCorrectivoRequestDTO){
+    public MantenimientoCorrectivo mapearDeMantCorrectivoRequest(MantenimientoCorrectivoRequestDTO requestDTO){
         MantenimientoCorrectivo mantenimientoCorrectivo = new MantenimientoCorrectivo();
-        BeanUtils.copyProperties(mantenimientoCorrectivoRequestDTO, mantenimientoCorrectivo);
+        BeanUtils.copyProperties(requestDTO, mantenimientoCorrectivo);
         return  mantenimientoCorrectivo;
     }
 
-    private MantenimientoPreventivoResponseDTO mapearMantenimientoPreventivo(MantenimientoPreventivo mantenimientoPreventivo){
-        MantenimientoPreventivoResponseDTO mantenimientoPreventivoResponseDTO = new MantenimientoPreventivoResponseDTO();
-        BeanUtils.copyProperties(mantenimientoPreventivo, mantenimientoPreventivoResponseDTO);
-        mantenimientoPreventivoResponseDTO.setTipoServicio(mantenimientoPreventivo.getClass().getSimpleName());
-        if(mantenimientoPreventivo.getOrdenMantenimiento() != null){
-            mantenimientoPreventivoResponseDTO.setOrdenMantenimientoId(mantenimientoPreventivo.getOrdenMantenimiento().getId());
-        }
-        return mantenimientoPreventivoResponseDTO;
-    }
-    private MantenimientoCorrectivoResponseDTO mapearMantenimientoCorrectivo(MantenimientoCorrectivo mantenimientoCorrectivo){
-        MantenimientoCorrectivoResponseDTO mantenimientoCorrectivoResponseDTO = new MantenimientoCorrectivoResponseDTO();
-        BeanUtils.copyProperties(mantenimientoCorrectivo, mantenimientoCorrectivoResponseDTO);
-        mantenimientoCorrectivoResponseDTO.setTipoServicio(mantenimientoCorrectivo.getClass().getSimpleName());
-        if(mantenimientoCorrectivo.getOrdenMantenimiento() != null){
-            mantenimientoCorrectivoResponseDTO.setOrdenMantenimientoId(mantenimientoCorrectivo.getOrdenMantenimiento().getId());
-        }
-        return mantenimientoCorrectivoResponseDTO;
-    }
-    public MantenimientoResponseDTO mapearMantenimiento(Mantenimiento mantenimiento){
-        if(mantenimiento instanceof MantenimientoPreventivo){
-            return mapearMantenimientoPreventivo((MantenimientoPreventivo) mantenimiento);
-        } else if (mantenimiento instanceof  MantenimientoCorrectivo) {
-            return mapearMantenimientoCorrectivo((MantenimientoCorrectivo) mantenimiento);
+    public MantenimientoResponseDTO mapearDeMantResponseDTO(Mantenimiento mantenimiento){
+        if (mantenimiento instanceof MantenimientoPreventivo) {
+            return mapearDeMantPreventivoResponse((MantenimientoPreventivo) mantenimiento);
+        } else if (mantenimiento instanceof MantenimientoCorrectivo) {
+            return mapearDeMantCorrectivoResponse((MantenimientoCorrectivo) mantenimiento);
         }
         throw new IllegalArgumentException("Tipo de Mantenimiento desconocido: " + mantenimiento.getClass().getName());
-    }*/
+    }
+
+    private MantenimientoPreventivoResponseDTO mapearDeMantPreventivoResponse(MantenimientoPreventivo mantenimientoPreventivo){
+        MantenimientoPreventivoResponseDTO responseDTO = new MantenimientoPreventivoResponseDTO();
+        BeanUtils.copyProperties(mantenimientoPreventivo, responseDTO);
+        responseDTO.setTipoServicio("PREVENTIVO");
+        return responseDTO;
+    }
+
+    private MantenimientoCorrectivoResponseDTO mapearDeMantCorrectivoResponse(MantenimientoCorrectivo mantenimientoCorrectivo){
+        MantenimientoCorrectivoResponseDTO responseDTO = new MantenimientoCorrectivoResponseDTO();
+        BeanUtils.copyProperties(mantenimientoCorrectivo, responseDTO);
+        responseDTO.setTipoServicio("CORRECTIVO");
+        return responseDTO;
+    }
 }

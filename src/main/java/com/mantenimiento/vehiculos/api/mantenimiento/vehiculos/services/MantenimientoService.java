@@ -9,10 +9,12 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.OrdenM
 import java.util.List;
 
 public interface MantenimientoService {
-    /*MantenimientoResponseDTO saveMantenimientoPreventivo(MantenimientoPreventivoRequestDTO mantenimientoPreventivoRequestDTO) throws OrdenMantenimientoNoEncontradaExcepcion;
-    MantenimientoResponseDTO saveMantenimientoCorrectivo(MantenimientoCorrectivoRequestDTO  mantenimientoCorrectivoRequestDTO) throws OrdenMantenimientoNoEncontradaExcepcion;
-    MantenimientoResponseDTO getMantenimientoById(Long mantenimientoId) throws MantenimientoNoEncontradoExcepcion;
-    List<MantenimientoResponseDTO> getMantenimientosByOrdenId(Long ordenId) throws OrdenMantenimientoNoEncontradaExcepcion;
-    MantenimientoResponseDTO updateEstadoMantenimiento(Long mantenimientoId, ActualizarEstadoMantenimientoRequestDTO actualizarEstadoMantenimientoRequestDTO) throws MantenimientoNoEncontradoExcepcion;
-    void deleteMantenimiento(Long mantenimientoId) throws MantenimientoNoEncontradoExcepcion;*/
+
+    List<MantenimientoResponseDTO> obtenerTodosLosMantenimientos();
+    MantenimientoResponseDTO obtenerMantenimientoPorId(Long id) throws MantenimientoNoEncontradoExcepcion;
+    MantenimientoResponseDTO crearMantenimientoPreventivo(MantenimientoPreventivoRequestDTO mantPrevenRequestDTO);
+    MantenimientoResponseDTO crearMantenimientoCorrectivo(MantenimientoCorrectivoRequestDTO mantCorrecRequestDTO);
+    MantenimientoResponseDTO actualizarMantenimientoPreventivo(Long idMantenimiento, MantenimientoPreventivoRequestDTO mantPrevenRequestDTO) throws MantenimientoNoEncontradoExcepcion;
+    MantenimientoResponseDTO actualizarMantenimientoCorrectivo(Long idMantenimiento, MantenimientoCorrectivoRequestDTO mantCorrecRequestDTO) throws MantenimientoNoEncontradoExcepcion;
+    void eliminarMantenimiento(Long id) throws MantenimientoNoEncontradoExcepcion;
 }
