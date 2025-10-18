@@ -1,6 +1,7 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.VehiculoRequest;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.VehiculoPageReponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.VehiculoResponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
 
@@ -23,4 +24,11 @@ public interface VehiculoService {
     List<VehiculoResponse> searchVehiculos(String keyword);
 
     List<VehiculoResponse> listByCliente(Long clienteId);
+
+    //Historial cuenta dto
+    //List<VehiculoResponse> listHistorialVheiculo(Long vehiculoId) throws VehiculoNoEncontradoExcepcion;
+
+    //List<VehiculoResponse> getHistorialVehiculo( Long id, int page, int size) throws VehiculoNoEncontradoExcepcion;
+
+    VehiculoPageReponse getVehiculoPageReponse(int page, int size);
 }
