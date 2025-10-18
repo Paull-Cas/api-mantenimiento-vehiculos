@@ -2,7 +2,9 @@ package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.impl;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.VehiculoRequest;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.VehiculoResponse;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Cliente;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.ClienteNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.VehiculoMappers;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.ClienteRepositorio;
@@ -31,9 +33,11 @@ public class VehiculoServiceImpl implements VehiculoService {
     private ClienteRepositorio clienteRepo;
 
     @Override
-    public VehiculoResponse saveVehiculo(VehiculoRequest vehiculoDto) {
+    public VehiculoResponse saveVehiculo(VehiculoRequest vehiculoDto) throws ClienteNoEncontradoExcepcion {
         log.info("Guardando vehiculo");
-        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto);  // Usando vehiculoMapper
+        Cliente cliente = clienteRepo.findById(vehiculoDto.getPropietarioId()).orElseThrow(() ->
+                new ClienteNoEncontradoExcepcion("Cliente no encontrado con ID: " + vehiculoDto.getPropietarioId()));
+        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto, cliente);  // Usando vehiculoMapper
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
         return vehiculoMapper.mapearVheiculo(vheculoGuardado);  // Usando vehiculoMapper
     }
@@ -48,7 +52,9 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     public VehiculoResponse updateVehiculo(Long id, VehiculoRequest vehiculoDto) throws VehiculoNoEncontradoExcepcion {
         log.info("Vehiculo Actualizado");
-        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto);  // Usando vehiculoMapper
+        Cliente cliente = clienteRepo.findById(vehiculoDto.getPropietarioId()).orElseThrow(() ->
+                new ClienteNoEncontradoExcepcion("Cliente no encontrado con ID: " + vehiculoDto.getPropietarioId()));
+        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto, cliente);  // Usando vehiculoMapper
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
         return vehiculoMapper.mapearVheiculo(vheculoGuardado);  // Usando vehiculoMapper
     }
