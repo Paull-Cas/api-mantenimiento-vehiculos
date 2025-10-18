@@ -42,11 +42,12 @@ public class VehiculoControlador {
     public void eliminarVehiculo(@PathVariable(name = "id") Long id) throws VehiculoNoEncontradoExcepcion {
         vehiculoService.deleteVehiculo(id);
     }
-
+    //fitrado por placa
     @GetMapping("/Vehiculos/search")
     public List<VehiculoResponse> buscarVehiculos(@RequestParam(name = "keyword", defaultValue = "") String keyword){
         return vehiculoService.searchVehiculos("%" + keyword + "%");
     }
+
     @GetMapping("/por-cliente/{clienteId}")
     public List<VehiculoResponse> listarVehiculosPorCliente(@PathVariable Long clienteId) {
         return vehiculoService.listByCliente(clienteId);  // Método del servicio

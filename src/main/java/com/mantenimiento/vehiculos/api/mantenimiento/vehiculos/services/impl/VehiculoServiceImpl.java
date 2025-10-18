@@ -58,7 +58,8 @@ public class VehiculoServiceImpl implements VehiculoService {
         log.info("Vehiculo Actualizado");
         Cliente cliente = clienteRepo.findById(vehiculoDto.getPropietarioId()).orElseThrow(() ->
                 new ClienteNoEncontradoExcepcion("Cliente no encontrado con ID: " + vehiculoDto.getPropietarioId()));
-        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto, cliente);  // Usando vehiculoMapper
+        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto, cliente);// Usando vehiculoMapper
+        vehiculo.setId(id);
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
         return vehiculoMapper.mapearVheiculo(vheculoGuardado);  // Usando vehiculoMapper
     }
