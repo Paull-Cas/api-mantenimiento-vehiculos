@@ -6,6 +6,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Mantenim
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.OrdenMantenimiento;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class OrdenMantenimientoMapper {
         return ordenMantenimientoResponse;
     }
 
-    public static List<OrdenMantenimientoResponse> toListResponse(List<OrdenMantenimiento> ordenMantenimientoList) {
+    public static List<OrdenMantenimientoResponse> toListResponse(Page<OrdenMantenimiento> ordenMantenimientoList) {
         return ordenMantenimientoList.stream()
                 .map(ordenMantenimiento -> toResponse(ordenMantenimiento))
                 .collect(Collectors.toList());

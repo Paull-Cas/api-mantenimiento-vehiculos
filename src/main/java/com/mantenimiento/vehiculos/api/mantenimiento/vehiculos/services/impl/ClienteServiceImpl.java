@@ -13,6 +13,8 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.ClienteMa
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.ClienteRepositorio;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class ClienteServiceImpl implements ClienteService {
             ClienteNatural clienteNatural = ClienteMapper.toClienteNaturalEntity(clienteRequest);
             clienteNatural.setId(id);
             ClienteNatural clienteNaturalBD = clienteRepositorio.save(clienteNatural);
-            return ClienteMapper.toClienteNaturalResponse(clienteNatural);
+            return ClienteMapper.toClienteNaturalResponse(clienteNaturalBD);
         }
         else throw new ClienteNoEncontradoExcepcion("Cliente no encontrado");
     }
@@ -63,14 +65,8 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public List<ClienteResponse> readAllClientes(String tipo) {
-        List<Cliente> clientes;
-        if (tipo == null || tipo.isEmpty()) {
-            clientes = clienteRepositorio.findAll();
-        } else {
-            clientes = clienteRepositorio.findByTipo(tipo);
-        }
-
+    public List<ClienteResponse> readAllClientes(String keyword, String tipo,  int page, int size) {
+        Page<Cliente> clientes = clienteRepositorio.searchCliente(keyword, tipo, PageRequest.of(page, size));
         List<ClienteResponse> clienteResponses = ClienteMapper.toClienteResponseList(clientes);
         return clienteResponses;
     }

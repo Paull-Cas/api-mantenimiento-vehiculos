@@ -17,7 +17,7 @@ public interface ClienteService {
     ClienteJuridicoResponse updateClienteJuridico(Long id, ClienteJuridicoRequest clienteRequest) throws ClienteNoEncontradoExcepcion;
 
 
-    List<ClienteResponse> readAllClientes(String tipo);
+    List<ClienteResponse> readAllClientes(String keyword, String tipo, int page, int size);
     ClienteResponse readClienteById(Long id) throws ClienteNoEncontradoExcepcion;
     void delete(Long id) throws ClienteNoEncontradoExcepcion;
 }

@@ -21,8 +21,13 @@ public class OrdenMantenimientoControlador {
     }
 
     @GetMapping("/todos")
-    public List<OrdenMantenimientoResponse> findAll() {
-        return ordenMantenimientoService.readAll();
+    public List<OrdenMantenimientoResponse> listar(
+            @RequestParam(name = "keyword", defaultValue = "") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size
+        )
+    {
+        return ordenMantenimientoService.readAll(keyword, page, size);
     }
 
     @GetMapping("/por-id/{id}")

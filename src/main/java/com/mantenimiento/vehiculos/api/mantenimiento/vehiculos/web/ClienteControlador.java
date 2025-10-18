@@ -22,7 +22,7 @@ public class ClienteControlador {
         return clienteService.createClienteNatural(clienteNaturalRequest);
     }
 
-    @PutMapping("/natural/actualizar")
+    @PutMapping("/natural/actualizar/{id}")
     public ClienteNaturalResponse actualizarClienteNatural(@PathVariable Long id, @RequestBody ClienteNaturalRequest clienteNaturalRequest){
         return clienteService.updateClienteNatural(id, clienteNaturalRequest);
     }
@@ -33,18 +33,22 @@ public class ClienteControlador {
         return clienteService.createClienteJuridico(clienteJuridicoRequest);
     }
 
-    @PutMapping("/juridico/actualizar")
+    @PutMapping("/juridico/actualizar/{id}")
     public ClienteJuridicoResponse actualizarClienteNatural(@PathVariable Long id, @RequestBody ClienteJuridicoRequest clienteJuridicoRequest){
         return clienteService.updateClienteJuridico(id, clienteJuridicoRequest);
     }
 
-    @GetMapping("/listar/todos")
-    public List<ClienteResponse> listarClientes(@RequestParam(required = false) String tipo){
-        return clienteService.readAllClientes(tipo);
+    @GetMapping("/listar")
+    public List<ClienteResponse> listarClientes(@RequestParam(name="keyword", defaultValue = "") String keyword,
+                                                @RequestParam(name="tipo", defaultValue = "natural") String tipo,
+                                                @RequestParam(name="page", defaultValue = "0") int page,
+                                                @RequestParam(name="size", defaultValue = "5") int size)
+    {
+        return clienteService.readAllClientes(keyword, tipo, page, size);
     }
 
     @GetMapping("/por-id/{id}")
-    public ClienteResponse listarClientePorId(@PathVariable Long id){
+    public ClienteResponse clientePorId(@PathVariable Long id){
         return clienteService.readClienteById(id);
     }
 

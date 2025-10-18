@@ -9,6 +9,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Cliente;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.ClienteJuridico;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.ClienteNatural;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class ClienteMapper {
         return clienteJuridicoResponse;
     }
 
-    public static List<ClienteResponse> toClienteResponseList(List<Cliente> clientes) {
+    public static List<ClienteResponse> toClienteResponseList(Page<Cliente> clientes) {
         return clientes.stream()
                 .map(cliente -> {
                     if (cliente instanceof ClienteJuridico) {

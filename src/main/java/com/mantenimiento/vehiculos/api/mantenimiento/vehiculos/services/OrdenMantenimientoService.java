@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface OrdenMantenimientoService {
     OrdenMantenimientoResponse create(OrdenMantenimientoRequest ordenMantenimientoRequest);
-    List<OrdenMantenimientoResponse> readAll();
+    List<OrdenMantenimientoResponse> readAll(String nroOrden, int page, int size);
     OrdenMantenimientoResponse readById(Long id) throws OrdenMantenimientoNoEncontradaExcepcion;
     OrdenMantenimientoResponse update(Long id, OrdenMantenimientoRequest ordenMantenimientoRequest) throws OrdenMantenimientoNoEncontradaExcepcion;
     void delete(Long id) throws OrdenMantenimientoNoEncontradaExcepcion;

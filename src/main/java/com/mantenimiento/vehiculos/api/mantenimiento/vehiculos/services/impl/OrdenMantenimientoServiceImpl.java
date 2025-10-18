@@ -12,6 +12,8 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.Orde
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.VehiculoRepositorio;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.OrdenMantenimientoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,8 +40,8 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
     }
 
     @Override
-    public List<OrdenMantenimientoResponse> readAll() {
-        List<OrdenMantenimiento> ordenesMantenimiento = ordenMantenimientoRepositorio.findAll();
+    public List<OrdenMantenimientoResponse> readAll(String keyword, int page, int size) {
+        Page<OrdenMantenimiento> ordenesMantenimiento = ordenMantenimientoRepositorio.searchOrdenMantenimiento(keyword, PageRequest.of(page, size));
         List<OrdenMantenimientoResponse> ordenesMantenimientoResponse = OrdenMantenimientoMapper.toListResponse(ordenesMantenimiento);
         return ordenesMantenimientoResponse;
     }

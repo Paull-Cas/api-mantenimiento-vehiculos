@@ -35,6 +35,6 @@ public class Vehiculo {
     @ManyToOne
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "vehiculo")
+    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenMantenimiento> mantenimientos;
 }

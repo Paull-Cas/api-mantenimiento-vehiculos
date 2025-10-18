@@ -27,6 +27,6 @@ public class Mantenimiento {
 
     private BigDecimal tiempoEmpleadoHoras;
 
-    @OneToMany(mappedBy = "mantenimiento", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "mantenimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenMantenimiento> ordenesMantenimiento;
 }

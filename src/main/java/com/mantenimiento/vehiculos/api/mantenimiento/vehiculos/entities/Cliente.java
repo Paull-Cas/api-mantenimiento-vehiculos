@@ -26,6 +26,6 @@ public class Cliente {
     @Column(name = "tipo", insertable = false, updatable = false)
     private String tipo;
 
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehiculo> vehiculos;
 }
