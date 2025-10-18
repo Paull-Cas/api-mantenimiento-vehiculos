@@ -3,6 +3,7 @@ package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.impl;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoCorrectivoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoPreventivoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponseDTO;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponsePageDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Mantenimiento;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.MantenimientoCorrectivo;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.MantenimientoPreventivo;
@@ -12,9 +13,14 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.Mant
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.MantenimientoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Pageable;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,5 +123,41 @@ public class MantenimientoServiceImpl implements MantenimientoService {
             throw new MantenimientoNoEncontradoExcepcion("No se puede eliminar. Mantenimiento no encontrado con ID: " + id);
         }
         mantenimientoRepositorio.deleteById(id);
+    }
+
+    @Override
+    public List<MantenimientoResponseDTO> buscarMantenimientosPorTipo(String tipo) {
+        Class<? extends Mantenimiento> tipoClase;
+        if ("preventivo".equalsIgnoreCase(tipo)) {
+            tipoClase = MantenimientoPreventivo.class;
+        } else if ("correctivo".equalsIgnoreCase(tipo)) {
+            tipoClase = MantenimientoCorrectivo.class;
+        } else {
+            return Collections.emptyList();
+        }
+        List<Mantenimiento> mantenimientos = mantenimientoRepositorio.buscarPorTipo(tipoClase);
+
+        return mantenimientos.stream()
+                .map(mantenimientoMapper::mapearDeMantResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public MantenimientoResponsePageDTO getMantenimientosPaginado(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Mantenimiento> pageMantenimientos = mantenimientoRepositorio.findAll(pageable);
+        List<MantenimientoResponseDTO> mantenimientoResponseDTOS = pageMantenimientos.getContent().stream()
+                .map(mantenimientoMapper::mapearDeMantResponseDTO)
+                .collect(Collectors.toList());
+
+        MantenimientoResponsePageDTO mantenimientoPageDTO = new MantenimientoResponsePageDTO();
+        mantenimientoPageDTO.setMantenimientos(mantenimientoResponseDTOS);
+        mantenimientoPageDTO.setCurrentPage(pageMantenimientos.getNumber());
+        mantenimientoPageDTO.setPageSize(pageMantenimientos.getSize());
+        mantenimientoPageDTO.setTotalPages(pageMantenimientos.getTotalPages());
+        mantenimientoPageDTO.setTotalElements(pageMantenimientos.getTotalElements());
+
+        return mantenimientoPageDTO;
     }
 }

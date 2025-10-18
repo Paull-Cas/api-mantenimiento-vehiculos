@@ -3,6 +3,7 @@ package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoCorrectivoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoPreventivoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponseDTO;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponsePageDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.MantenimientoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.OrdenMantenimientoNoEncontradaExcepcion;
 
@@ -17,4 +18,6 @@ public interface MantenimientoService {
     MantenimientoResponseDTO updateMantenimientoPreventivo(Long idMantenimiento, MantenimientoPreventivoRequestDTO mantPrevenRequestDTO) throws MantenimientoNoEncontradoExcepcion;
     MantenimientoResponseDTO updateMantenimientoCorrectivo(Long idMantenimiento, MantenimientoCorrectivoRequestDTO mantCorrecRequestDTO) throws MantenimientoNoEncontradoExcepcion;
     void deleteMantenimiento(Long id) throws MantenimientoNoEncontradoExcepcion;
+    List<MantenimientoResponseDTO> buscarMantenimientosPorTipo(String tipo);
+    MantenimientoResponsePageDTO getMantenimientosPaginado(int page, int size);
 }
