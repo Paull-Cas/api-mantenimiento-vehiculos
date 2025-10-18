@@ -23,6 +23,8 @@ public class Cliente {
     private String telefono;
     private String correoElectronico;
     private String direccion;
+    @Column(name = "tipo", insertable = false, updatable = false)
+    private String tipo;
 
     @OneToMany(mappedBy = "cliente")
     private List<Vehiculo> vehiculos;

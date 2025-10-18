@@ -35,7 +35,7 @@ public class OrdenMantenimientoControlador {
         return ordenMantenimientoService.update(id, ordenMantenimientoRequest);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/eliminar/{id}")
     public void delete(@PathVariable Long id){
         ordenMantenimientoService.delete(id);
     }
