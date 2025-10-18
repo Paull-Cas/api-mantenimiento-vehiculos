@@ -1,8 +1,14 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class VehiculoResponse {
     private Long id;
     private String placa;
@@ -13,5 +19,5 @@ public class VehiculoResponse {
     private String tipoCombustible;
     private String numeroSerie;
     private int kilometraje;
-    private ClienteResponse propietarioId;
+    private Long propietarioId;
 }

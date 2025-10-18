@@ -45,4 +45,8 @@ public class VehiculoControlador {
     public List<VehiculoResponse> buscarVehiculos(@RequestParam(name = "keyword", defaultValue = "") String keyword){
         return VehiculoService.searchVehiculos("%" + keyword + "%");
     }
+    @GetMapping("/por-cliente/{clienteId}")
+    public List<VehiculoResponse> listarVehiculosPorCliente(@PathVariable Long clienteId) {
+        return VehiculoService.listByCliente(clienteId);  // Método del servicio
+    }
 }

@@ -13,4 +13,6 @@ public interface VehiculoRepositorio extends JpaRepository<Vehiculo, Long> {
     @Query("SELECT c FROM Vehiculo c WHERE c.placa LIKE :kw")
     List<Vehiculo> searchVehiculos(@Param(value = "kw") String keyword);
 
+    List<Vehiculo> findByPlacaContainingIgnoreCaseOrMarcaContainingIgnoreCaseOrModeloContainingIgnoreCase(String p, String m, String mo);
+    List<Vehiculo> findByCliente_Id(Long clienteId);
 }
