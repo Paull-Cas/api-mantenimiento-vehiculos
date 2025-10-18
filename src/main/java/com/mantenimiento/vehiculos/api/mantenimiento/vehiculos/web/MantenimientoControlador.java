@@ -3,10 +3,12 @@ package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.web;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoCorrectivoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoPreventivoRequestDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponseDTO;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponsePageDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.MantenimientoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.MantenimientoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,5 +49,18 @@ public class MantenimientoControlador {
     @DeleteMapping("/{idMantenimiento}")
     public void eliminarMantenimiento(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {
         mantenimientoService.deleteMantenimiento(idMantenimiento);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<MantenimientoResponseDTO>> filtrarPorTipo(@RequestParam("tipo") String tipo) {
+        List<MantenimientoResponseDTO> mantenimientos = mantenimientoService.buscarMantenimientosPorTipo(tipo);
+        return ResponseEntity.ok(mantenimientos);
+    }
+    @GetMapping("/paginacion")
+    public ResponseEntity<MantenimientoResponsePageDTO> getMantenimientos(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+
+        MantenimientoResponsePageDTO paginaDeMantenimientos = mantenimientoService.getMantenimientosPaginado(page, size);
+        return ResponseEntity.ok(paginaDeMantenimientos);
     }
 }
