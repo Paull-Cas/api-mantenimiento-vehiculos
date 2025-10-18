@@ -47,6 +47,7 @@ public class OrdenMantenimiento {
     @PrePersist
     public void crear(){
         this.fechaIngreso = LocalDate.now();
+        this.fechaUltimaActualizacion = LocalDate.now();
         this.estado = EstadoOrdenMantenimiento.PENDIENTE;
     }
 
