@@ -23,7 +23,7 @@ public class OrdenMantenimiento {
     @Column(unique = true)
     private String numeroOrden;
 
-    @ManyToOne()
+    @ManyToOne
     private Mantenimiento mantenimiento;
 
     @ManyToOne

@@ -7,6 +7,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.Cli
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.ClienteResponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,30 +15,35 @@ import java.util.List;
 @RestController
 @RequestMapping("api/cliente")
 public class ClienteControlador {
+
     @Autowired
     private ClienteService clienteService;
 
+    @PreAuthorize("hasAuthority('CREATE')")
     @PostMapping("/natural/guardar")
     public ClienteNaturalResponse createClienteNatural(@RequestBody ClienteNaturalRequest clienteNaturalRequest){
         return clienteService.createClienteNatural(clienteNaturalRequest);
     }
 
+    @PreAuthorize("hasAuthority('UPDATE')")
     @PutMapping("/natural/actualizar/{id}")
     public ClienteNaturalResponse actualizarClienteNatural(@PathVariable Long id, @RequestBody ClienteNaturalRequest clienteNaturalRequest){
         return clienteService.updateClienteNatural(id, clienteNaturalRequest);
     }
 
-
+    @PreAuthorize("hasAuthority('CREATE')")
     @PostMapping("/juridico/guardar")
     public ClienteJuridicoResponse createClienteJuridico(@RequestBody ClienteJuridicoRequest clienteJuridicoRequest){
         return clienteService.createClienteJuridico(clienteJuridicoRequest);
     }
 
+    @PreAuthorize("hasAuthority('UPDATE')")
     @PutMapping("/juridico/actualizar/{id}")
     public ClienteJuridicoResponse actualizarClienteNatural(@PathVariable Long id, @RequestBody ClienteJuridicoRequest clienteJuridicoRequest){
         return clienteService.updateClienteJuridico(id, clienteJuridicoRequest);
     }
 
+    @PreAuthorize("hasAuthority('READ')")
     @GetMapping("/listar")
     public List<ClienteResponse> listarClientes(@RequestParam(name="keyword", defaultValue = "") String keyword,
                                                 @RequestParam(name="tipo", defaultValue = "natural") String tipo,
@@ -47,11 +53,13 @@ public class ClienteControlador {
         return clienteService.readAllClientes(keyword, tipo, page, size);
     }
 
+    @PreAuthorize("hasAuthority('READ')")
     @GetMapping("/por-id/{id}")
     public ClienteResponse clientePorId(@PathVariable Long id){
         return clienteService.readClienteById(id);
     }
 
+    @PreAuthorize("hasAuthority('DELETE')")
     @DeleteMapping("/eliminar/{id}")
     public void eliminarCliente(@PathVariable Long id){
         clienteService.delete(id);

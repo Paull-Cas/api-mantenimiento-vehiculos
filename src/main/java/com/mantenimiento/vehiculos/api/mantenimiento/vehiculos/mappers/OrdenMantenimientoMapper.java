@@ -24,8 +24,8 @@ public class OrdenMantenimientoMapper {
     public static OrdenMantenimientoResponse toResponse(OrdenMantenimiento ordenMantenimiento) {
         OrdenMantenimientoResponse ordenMantenimientoResponse = new OrdenMantenimientoResponse();
         BeanUtils.copyProperties(ordenMantenimiento, ordenMantenimientoResponse);
-        ordenMantenimientoResponse.setIdMantenimiento(ordenMantenimiento.getId());
-        ordenMantenimientoResponse.setIdVehiculo(ordenMantenimiento.getId());
+        ordenMantenimientoResponse.setIdMantenimiento(ordenMantenimiento.getMantenimiento().getId());
+        ordenMantenimientoResponse.setIdVehiculo(ordenMantenimiento.getVehiculo().getId());
         return ordenMantenimientoResponse;
     }
 
