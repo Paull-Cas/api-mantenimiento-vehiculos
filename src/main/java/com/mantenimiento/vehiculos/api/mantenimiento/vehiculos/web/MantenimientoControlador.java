@@ -9,6 +9,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.Mantenim
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,6 @@ public class MantenimientoControlador {
 
     @Autowired
     private MantenimientoService mantenimientoService;
-
 
     @GetMapping("/{idMantenimiento}")
     public MantenimientoResponseDTO getMantenimientoPorId(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {

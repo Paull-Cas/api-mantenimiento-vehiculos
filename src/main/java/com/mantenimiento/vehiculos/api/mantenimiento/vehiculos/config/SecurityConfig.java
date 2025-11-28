@@ -38,7 +38,6 @@ public class SecurityConfig {
                     // protegidos con JWT
                     http.requestMatchers("/api/cliente/**").authenticated();
 
-
                     http.anyRequest().denyAll();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
@@ -62,4 +61,8 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(new BCryptPasswordEncoder().encode(System.getenv("DEMO_PASSWORD")));
+//    }
 }
