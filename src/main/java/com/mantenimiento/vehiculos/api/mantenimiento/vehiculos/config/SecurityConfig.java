@@ -36,9 +36,9 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
 
                     // protegidos con JWT
-                    http.requestMatchers("/api/cliente/**").authenticated();
+                    //http.requestMatchers("/api/cliente/**").authenticated();
 
-                    http.anyRequest().denyAll();
+                    http.anyRequest().authenticated();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
                 .build();
