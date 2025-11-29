@@ -45,13 +45,13 @@ public class MantenimientoControlador {
         return mantenimientoService.saveMantenimientoCorrectivo(mantCorrecDTO);
     }
 
-    @PreAuthorize("hasAuthority('UPDATE')") // Roles que tienen acceso: ADMIN, DEVELOPER
+    @PreAuthorize("hasAuthority('UPDATE') and hasAuthority('REFACTOR')") // Roles que tienen acceso: DEVELOPER
     @PutMapping("/correctivo/{idMantenimiento}")
     public MantenimientoResponseDTO actualizarMantenimientoCorrectivo(@PathVariable Long idMantenimiento, @RequestBody MantenimientoCorrectivoRequestDTO mantCorrecDTO) throws MantenimientoNoEncontradoExcepcion{
         return mantenimientoService.updateMantenimientoCorrectivo(idMantenimiento,mantCorrecDTO);
     }
 
-    @PreAuthorize("hasAuthority('UPDATE')") // Roles que tienen acceso: ADMIN, DEVELOPER
+    @PreAuthorize("hasAuthority('UPDATE') and hasAuthority('REFACTOR')") // Roles que tienen acceso: DEVELOPER
     @PutMapping("/preventivo/{idMantenimiento}")
     public MantenimientoResponseDTO actualizarMantenimientoPreventivo(@PathVariable Long idMantenimiento, @RequestBody MantenimientoPreventivoRequestDTO mantPrevenDTO) throws MantenimientoNoEncontradoExcepcion{
         return mantenimientoService.updateMantenimientoPreventivo(idMantenimiento,mantPrevenDTO);
