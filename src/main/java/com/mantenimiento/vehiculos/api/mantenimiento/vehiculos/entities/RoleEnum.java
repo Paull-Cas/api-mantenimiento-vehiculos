@@ -1,8 +1,9 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities;
 
 public enum RoleEnum {
-    ADMIN,
-    USER,
-    INVITED,
-    DEVELOPER
+    ADMIN_VEHICULOS,
+    ADMIN_CLIENTES,
+    ADMIN_MANTENIMIENTOS,
+    ADMIN_ORDENES_MANTENIMIENTO,
+    INVITADO
 }

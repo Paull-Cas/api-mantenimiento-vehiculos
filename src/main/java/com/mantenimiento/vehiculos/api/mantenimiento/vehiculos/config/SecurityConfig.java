@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,10 +22,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
     private JwtUtils jwtUtils;
+
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider) throws Exception {
@@ -35,11 +38,7 @@ public class SecurityConfig {
                     // EndPoints publicos
                     http.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
 
-                    // protegidos con JWT
-                    http.requestMatchers("/api/cliente/**").authenticated();
-
-
-                    http.anyRequest().denyAll();
+                    http.anyRequest().authenticated();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
                 .build();
@@ -62,4 +61,8 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(new BCryptPasswordEncoder().encode(System.getenv("DEMO_PASSWORD")));
+//    }
 }

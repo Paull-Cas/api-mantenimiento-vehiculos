@@ -7,8 +7,8 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.Man
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.MantenimientoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.MantenimientoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,41 +20,65 @@ public class MantenimientoControlador {
     @Autowired
     private MantenimientoService mantenimientoService;
 
-
+    // Roles con acceso: ADMIN_MANTENIMIENTOS, INVITADO
+    @PreAuthorize("hasAuthority('READ_MANTENIMIENTO')")
     @GetMapping("/{idMantenimiento}")
     public MantenimientoResponseDTO getMantenimientoPorId(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {
         return mantenimientoService.getMantenimientoPorId(idMantenimiento);
     }
+
+    // Roles con acceso: ADMIN_MANTENIMIENTOS, INVITADO
+    @PreAuthorize("hasAuthority('READ_MANTENIMIENTO')")
     @GetMapping
     public List<MantenimientoResponseDTO> getMantenimientos() {
         return mantenimientoService.getTodosLosMantenimientos();
     }
+
+    // Roles con acceso: ADMIN_MANTENIMIENTOS
+    @PreAuthorize("hasAuthority('CREATE_MANTENIMIENTO')")
     @PostMapping("/preventivo")
     public MantenimientoResponseDTO crearMantenimientoPreventivo(@RequestBody MantenimientoPreventivoRequestDTO mantPrevDTO){
         return mantenimientoService.saveMantenimientoPreventivo(mantPrevDTO);
     }
+
+    // Roles con acceso: ADMIN_MANTENIMIENTOS
+    @PreAuthorize("hasAuthority('CREATE_MANTENIMIENTO')")
     @PostMapping("/correctivo")
     public MantenimientoResponseDTO crearMantenimientoCorrectivo(@RequestBody MantenimientoCorrectivoRequestDTO mantCorrecDTO){
         return mantenimientoService.saveMantenimientoCorrectivo(mantCorrecDTO);
     }
+
+    // Roles con acceso: ADMIN_MANTENIMIENTOS (requiere UPDATE y REFACTOR)
+    @PreAuthorize("hasAuthority('UPDATE_MANTENIMIENTO') and hasAuthority('REFACTOR_MANTENIMIENTO')")
     @PutMapping("/correctivo/{idMantenimiento}")
     public MantenimientoResponseDTO actualizarMantenimientoCorrectivo(@PathVariable Long idMantenimiento, @RequestBody MantenimientoCorrectivoRequestDTO mantCorrecDTO) throws MantenimientoNoEncontradoExcepcion{
-        return mantenimientoService.updateMantenimientoCorrectivo(idMantenimiento,mantCorrecDTO);
-    }
-    @PutMapping("/preventivo/{idMantenimiento}")
-    public MantenimientoResponseDTO actualizarMantenimientoPreventivo(@PathVariable Long idMantenimiento, @RequestBody MantenimientoPreventivoRequestDTO mantPrevenDTO) throws MantenimientoNoEncontradoExcepcion{
-        return mantenimientoService.updateMantenimientoPreventivo(idMantenimiento,mantPrevenDTO);
+        return mantenimientoService.updateMantenimientoCorrectivo(idMantenimiento, mantCorrecDTO);
     }
 
+    // Roles con acceso: ADMIN_MANTENIMIENTOS (requiere UPDATE y REFACTOR)
+    @PreAuthorize("hasAuthority('UPDATE_MANTENIMIENTO') and hasAuthority('REFACTOR_MANTENIMIENTO')")
+    @PutMapping("/preventivo/{idMantenimiento}")
+    public MantenimientoResponseDTO actualizarMantenimientoPreventivo(@PathVariable Long idMantenimiento, @RequestBody MantenimientoPreventivoRequestDTO mantPrevenDTO) throws MantenimientoNoEncontradoExcepcion{
+        return mantenimientoService.updateMantenimientoPreventivo(idMantenimiento, mantPrevenDTO);
+    }
+
+    // Roles con acceso: ADMIN_MANTENIMIENTOS
+    @PreAuthorize("hasAuthority('DELETE_MANTENIMIENTO')")
     @DeleteMapping("/{idMantenimiento}")
     public void eliminarMantenimiento(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {
         mantenimientoService.deleteMantenimiento(idMantenimiento);
     }
+
+    // Roles con acceso: ADMIN_MANTENIMIENTOS, INVITADO
+    @PreAuthorize("hasAuthority('READ_MANTENIMIENTO')")
     @GetMapping("/search")
     public ResponseEntity<List<MantenimientoResponseDTO>> filtrarPorTipo(@RequestParam("tipo") String tipo) {
         List<MantenimientoResponseDTO> mantenimientos = mantenimientoService.buscarMantenimientosPorTipo(tipo);
         return ResponseEntity.ok(mantenimientos);
     }
+
+    // Roles con acceso: ADMIN_MANTENIMIENTOS, INVITADO
+    @PreAuthorize("hasAuthority('READ_MANTENIMIENTO')")
     @GetMapping("/paginacion")
     public ResponseEntity<MantenimientoResponsePageDTO> getMantenimientos(
             @RequestParam(name = "page", defaultValue = "0") int page,
