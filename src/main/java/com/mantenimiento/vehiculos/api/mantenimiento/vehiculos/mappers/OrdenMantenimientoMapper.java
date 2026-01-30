@@ -1,37 +1,22 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers;
 
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.OrdenMantenimientoRequest;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.OrdenMantenimientoResponse;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Mantenimiento;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.OrdenMantenimiento;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class OrdenMantenimientoMapper {
 
-    public static OrdenMantenimiento toEntity(OrdenMantenimientoRequest ordenMantenimientoRequest, Vehiculo vehiculo, Mantenimiento mantenimiento) {
-        OrdenMantenimiento ordenMantenimiento = new OrdenMantenimiento();
-        BeanUtils.copyProperties(ordenMantenimientoRequest, ordenMantenimiento);
-        ordenMantenimiento.setVehiculo(vehiculo);
-        ordenMantenimiento.setMantenimiento(mantenimiento);
-        return ordenMantenimiento;
-    }
-
-    public static OrdenMantenimientoResponse toResponse(OrdenMantenimiento ordenMantenimiento) {
-        OrdenMantenimientoResponse ordenMantenimientoResponse = new OrdenMantenimientoResponse();
-        BeanUtils.copyProperties(ordenMantenimiento, ordenMantenimientoResponse);
-        ordenMantenimientoResponse.setIdMantenimiento(ordenMantenimiento.getMantenimiento().getId());
-        ordenMantenimientoResponse.setIdVehiculo(ordenMantenimiento.getVehiculo().getId());
-        return ordenMantenimientoResponse;
-    }
-
-    public static List<OrdenMantenimientoResponse> toListResponse(Page<OrdenMantenimiento> ordenMantenimientoList) {
-        return ordenMantenimientoList.stream()
-                .map(ordenMantenimiento -> toResponse(ordenMantenimiento))
-                .collect(Collectors.toList());
+    public static OrdenMantenimientoResponse toResponse(OrdenMantenimiento om) {
+        return OrdenMantenimientoResponse.builder()
+                .id(om.getId())
+                .ordenId(om.getOrden() != null ? om.getOrden().getId() : null)
+                .numeroOrden(om.getOrden() != null ? om.getOrden().getNumeroOrden() : null)
+                .mantenimientoId(om.getMantenimiento() != null ? om.getMantenimiento().getId() : null)
+                .nombreMantenimiento(om.getMantenimiento() != null ? om.getMantenimiento().getNombre() : null)
+                .descripcionProblema(om.getDescripcionProblema())
+                .estado(om.getEstado())
+                .costo(om.getCosto())
+                .fechaInicio(om.getFechaInicio())
+                .fechaFin(om.getFechaFin())
+                .build();
     }
 }

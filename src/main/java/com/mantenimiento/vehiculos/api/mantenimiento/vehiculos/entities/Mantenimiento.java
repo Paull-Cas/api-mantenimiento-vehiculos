@@ -13,20 +13,23 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "TIPO_SERVICIO", length = 12)
 public class Mantenimiento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private TipoMantenimiento tipoMantenimiento;
-
+    private String nombre;
     private String descripcion;
 
-    private BigDecimal tiempoEmpleadoHoras;
+    @Enumerated(EnumType.STRING)
+    private TipoMantenimiento tipo;
 
-    @OneToMany(mappedBy = "mantenimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private BigDecimal precioMinimo;
+
+    private boolean activo = true;
+
+    @OneToMany(mappedBy = "mantenimiento", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenMantenimiento> ordenesMantenimiento;
 }

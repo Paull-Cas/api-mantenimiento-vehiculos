@@ -1,11 +1,12 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums;
 
 public enum TipoMantenimiento {
+    PREVENTIVO,
+    CORRECTIVO,
     DIAGNOSTICO,
-    REPARACION,
-    REEMPLAZO,
-    INSTALACION,
     INSPECCION,
+    LIMPIEZA,
     LUBRICACION,
-    LIMPIEZA
+    REEMPLAZO,
+    INSTALACION
 }

@@ -17,9 +17,7 @@ public interface VehiculoRepositorio extends JpaRepository<Vehiculo, Long> {
 
     List<Vehiculo> findByCliente_Id(Long clienteId);
 
-    //List<Vehiculo> findByIdve(Long id);
-    //Page<Vehiculo> findByIdve(Long id,Pageable pageable);
+    Page<Vehiculo> findById(Long id, Pageable pageable);
 
-    Page<Vehiculo> findById(Long id, Pageable pageable);  // Usamos 'id' para buscar por el ID del vehículo
-    //Page<Vehiculo> findAll(Pageable pageable);
+    List<Vehiculo> findByClienteId(Long id);
 }

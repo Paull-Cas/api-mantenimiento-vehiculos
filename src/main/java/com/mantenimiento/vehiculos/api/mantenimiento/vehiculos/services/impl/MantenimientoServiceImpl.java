@@ -1,12 +1,10 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.impl;
 
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoCorrectivoRequestDTO;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoPreventivoRequestDTO;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.MantenimientoRequest;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponseDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.MantenimientoResponsePageDTO;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Mantenimiento;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.MantenimientoCorrectivo;
-import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.MantenimientoPreventivo;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.TipoMantenimiento;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.MantenimientoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.MantenimientoMapper;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.MantenimientoRepositorio;
@@ -15,12 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.data.domain.Pageable;
-
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,94 +27,57 @@ public class MantenimientoServiceImpl implements MantenimientoService {
 
     @Autowired
     private MantenimientoRepositorio mantenimientoRepositorio;
+
     @Autowired
     private MantenimientoMapper mantenimientoMapper;
 
     @Override
     @Transactional
-    public MantenimientoResponseDTO saveMantenimientoPreventivo(MantenimientoPreventivoRequestDTO mantPrevenRequestDTO) {
-        log.info("Guardar mantenimiento preventivo");
-        MantenimientoPreventivo mantenimientoPreventivo = mantenimientoMapper.mapearDeMantPreventivoRequest(mantPrevenRequestDTO);
-        MantenimientoPreventivo mantenimientoPreventivoBD = mantenimientoRepositorio.save(mantenimientoPreventivo);
-        return mantenimientoMapper.mapearDeMantResponseDTO(mantenimientoPreventivoBD);
+    public MantenimientoResponseDTO saveMantenimiento(MantenimientoRequest mantenimientoRequest) {
+        log.info("Guardar mantenimiento de tipo: {}", mantenimientoRequest.getTipo());
+        Mantenimiento mantenimiento = mantenimientoMapper.mapearDeRequest(mantenimientoRequest);
+        Mantenimiento mantenimientoBD = mantenimientoRepositorio.save(mantenimiento);
+        return mantenimientoMapper.mapearDeResponseDTO(mantenimientoBD);
     }
 
     @Override
-    @Transactional
-    public MantenimientoResponseDTO saveMantenimientoCorrectivo(MantenimientoCorrectivoRequestDTO mantCorrecRequestDTO) {
-        log.info("Guardar mantenimiento correctivo");
-        MantenimientoCorrectivo mantenimientoCorrectivo = mantenimientoMapper.mapearDeMantCorrectivoRequest(mantCorrecRequestDTO);
-        MantenimientoCorrectivo mantenimientoCorrectivoBD = mantenimientoRepositorio.save(mantenimientoCorrectivo);
-        return mantenimientoMapper.mapearDeMantResponseDTO(mantenimientoCorrectivoBD);
-    }
-
-    @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MantenimientoResponseDTO> getTodosLosMantenimientos() {
         return mantenimientoRepositorio.findAll()
                 .stream()
-                .map(mantenimientoMapper::mapearDeMantResponseDTO)
+                .map(mantenimientoMapper::mapearDeResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public MantenimientoResponseDTO getMantenimientoPorId(Long id) throws MantenimientoNoEncontradoExcepcion {
         Mantenimiento mantenimiento = mantenimientoRepositorio.findById(id)
                 .orElseThrow(() -> new MantenimientoNoEncontradoExcepcion("Mantenimiento no encontrado con ID: " + id));
-        return mantenimientoMapper.mapearDeMantResponseDTO(mantenimiento);
+        return mantenimientoMapper.mapearDeResponseDTO(mantenimiento);
     }
 
     @Override
     @Transactional
-    public MantenimientoResponseDTO updateMantenimientoPreventivo(Long idMantenimiento, MantenimientoPreventivoRequestDTO mantPrevenRequestDTO) throws MantenimientoNoEncontradoExcepcion {
-            log.info("Actualizar mantenimiento preventivo");
-            Mantenimiento mantenimientoExistente = mantenimientoRepositorio.findById(idMantenimiento)
-                    .orElseThrow(() -> new MantenimientoNoEncontradoExcepcion("Mantenimiento no encontrado con ID: " + idMantenimiento));
+    public MantenimientoResponseDTO updateMantenimiento(Long idMantenimiento, MantenimientoRequest mantenimientoRequest) throws MantenimientoNoEncontradoExcepcion {
+        log.info("Actualizar mantenimiento con ID: {}", idMantenimiento);
+        Mantenimiento mantenimientoExistente = mantenimientoRepositorio.findById(idMantenimiento)
+                .orElseThrow(() -> new MantenimientoNoEncontradoExcepcion("Mantenimiento no encontrado con ID: " + idMantenimiento));
 
-            if (!(mantenimientoExistente instanceof MantenimientoPreventivo)) {
-                throw new IllegalArgumentException("El mantenimiento con ID " + idMantenimiento + " no es de tipo Preventivo.");
-            }
+        mantenimientoExistente.setNombre(mantenimientoRequest.getNombre());
+        mantenimientoExistente.setDescripcion(mantenimientoRequest.getDescripcion());
+        mantenimientoExistente.setTipo(mantenimientoRequest.getTipo());
+        mantenimientoExistente.setPrecioMinimo(mantenimientoRequest.getPrecioMinimo());
+        mantenimientoExistente.setActivo(mantenimientoRequest.isActivo());
 
-            MantenimientoPreventivo mantenimientoPreventivo = (MantenimientoPreventivo) mantenimientoExistente;
-
-            mantenimientoPreventivo.setTipoMantenimiento(mantPrevenRequestDTO.getTipoMantenimiento());
-            mantenimientoPreventivo.setDescripcion(mantPrevenRequestDTO.getDescripcion());
-            mantenimientoPreventivo.setTiempoEmpleadoHoras(mantPrevenRequestDTO.getTiempoEmpleadoHoras());
-            mantenimientoPreventivo.setKilometrajeRecomendado(mantPrevenRequestDTO.getKilometrajeRecomendado());
-            mantenimientoPreventivo.setEsCambioDeComponente(mantPrevenRequestDTO.isEsCambioDeComponente());
-
-            Mantenimiento mantenimientoActualizado = mantenimientoRepositorio.save(mantenimientoPreventivo);
-            return mantenimientoMapper.mapearDeMantResponseDTO(mantenimientoActualizado);
-    }
-
-    @Override
-    @Transactional
-    public MantenimientoResponseDTO updateMantenimientoCorrectivo(Long idMantenimiento, MantenimientoCorrectivoRequestDTO mantCorrecRequestDTO) throws MantenimientoNoEncontradoExcepcion {
-            log.info("Actualizar mantenimiento correctivo");
-            Mantenimiento mantenimientoExistente = mantenimientoRepositorio.findById(idMantenimiento)
-                    .orElseThrow(() -> new MantenimientoNoEncontradoExcepcion("Mantenimiento no encontrado con ID: " + idMantenimiento));
-
-            if (!(mantenimientoExistente instanceof MantenimientoCorrectivo)) {
-                throw new IllegalArgumentException("El mantenimiento con ID " + idMantenimiento + " no es de tipo Correctivo.");
-            }
-
-            MantenimientoCorrectivo mantenimientoCorrectivo = (MantenimientoCorrectivo) mantenimientoExistente;
-
-            mantenimientoCorrectivo.setTipoMantenimiento(mantCorrecRequestDTO.getTipoMantenimiento());
-            mantenimientoCorrectivo.setDescripcion(mantCorrecRequestDTO.getDescripcion());
-            mantenimientoCorrectivo.setTiempoEmpleadoHoras(mantCorrecRequestDTO.getTiempoEmpleadoHoras());
-            mantenimientoCorrectivo.setDiagnosticoInicial(mantCorrecRequestDTO.getDiagnosticoInicial());
-            mantenimientoCorrectivo.setEsReparacionUrgente(mantCorrecRequestDTO.isEsReparacionUrgente());
-
-            Mantenimiento mantenimientoActualizado = mantenimientoRepositorio.save(mantenimientoCorrectivo);
-            return mantenimientoMapper.mapearDeMantResponseDTO(mantenimientoActualizado);
+        Mantenimiento mantenimientoActualizado = mantenimientoRepositorio.save(mantenimientoExistente);
+        return mantenimientoMapper.mapearDeResponseDTO(mantenimientoActualizado);
     }
 
     @Override
     @Transactional
     public void deleteMantenimiento(Long id) throws MantenimientoNoEncontradoExcepcion {
-        log.info("Eliminar mantenimiento");
+        log.info("Eliminar mantenimiento con ID: {}", id);
         if (!mantenimientoRepositorio.existsById(id)) {
             throw new MantenimientoNoEncontradoExcepcion("No se puede eliminar. Mantenimiento no encontrado con ID: " + id);
         }
@@ -126,29 +85,23 @@ public class MantenimientoServiceImpl implements MantenimientoService {
     }
 
     @Override
-    public List<MantenimientoResponseDTO> buscarMantenimientosPorTipo(String tipo) {
-        Class<? extends Mantenimiento> tipoClase;
-        if ("preventivo".equalsIgnoreCase(tipo)) {
-            tipoClase = MantenimientoPreventivo.class;
-        } else if ("correctivo".equalsIgnoreCase(tipo)) {
-            tipoClase = MantenimientoCorrectivo.class;
-        } else {
-            return Collections.emptyList();
-        }
-        List<Mantenimiento> mantenimientos = mantenimientoRepositorio.buscarPorTipo(tipoClase);
-
+    @Transactional(readOnly = true)
+    public List<MantenimientoResponseDTO> buscarMantenimientosPorTipo(TipoMantenimiento tipo) {
+        List<Mantenimiento> mantenimientos = mantenimientoRepositorio.findByTipo(tipo);
         return mantenimientos.stream()
-                .map(mantenimientoMapper::mapearDeMantResponseDTO)
+                .map(mantenimientoMapper::mapearDeResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MantenimientoResponsePageDTO getMantenimientosPaginado(int page, int size) {
-
         Pageable pageable = PageRequest.of(page, size);
         Page<Mantenimiento> pageMantenimientos = mantenimientoRepositorio.findAll(pageable);
-        List<MantenimientoResponseDTO> mantenimientoResponseDTOS = pageMantenimientos.getContent().stream()
-                .map(mantenimientoMapper::mapearDeMantResponseDTO)
+
+        List<MantenimientoResponseDTO> mantenimientoResponseDTOS = pageMantenimientos.getContent()
+                .stream()
+                .map(mantenimientoMapper::mapearDeResponseDTO)
                 .collect(Collectors.toList());
 
         MantenimientoResponsePageDTO mantenimientoPageDTO = new MantenimientoResponsePageDTO();

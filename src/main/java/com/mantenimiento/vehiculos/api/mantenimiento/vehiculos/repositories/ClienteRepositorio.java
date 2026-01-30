@@ -13,15 +13,17 @@ import org.springframework.stereotype.Repository;
 public interface ClienteRepositorio extends JpaRepository<Cliente,Long> {
 
     @Query(value = """
-        SELECT * FROM cliente
-            WHERE tipo = :tipo 
-                AND (
-                    CASE 
-                        WHEN :tipo = 'juridico' THEN LOWER(razon_social) LIKE LOWER(CONCAT('%', :kw, '%'))
-                        WHEN :tipo = 'natural' THEN LOWER(nombre) LIKE LOWER(CONCAT('%', :kw, '%'))
-                        ELSE 1=1
-                    END
-                    )
-    """, nativeQuery = true)
+    SELECT * FROM cliente
+        WHERE (:tipo IS NULL OR tipo = :tipo)
+            AND (
+                :kw IS NULL OR :kw = '' OR
+                CASE 
+                    WHEN tipo = 'juridico' THEN LOWER(razon_social) LIKE LOWER(CONCAT('%', :kw, '%'))
+                    WHEN tipo = 'natural' THEN LOWER(nombre) LIKE LOWER(CONCAT('%', :kw, '%'))
+                    ELSE 1=1
+                END
+            )
+""", nativeQuery = true)
     Page<Cliente> searchCliente(@Param("kw") String keyword, @Param("tipo") String tipo, Pageable pageable);
-    }
+    Cliente findAllByUsuarioId(Long usuarioId);
+}

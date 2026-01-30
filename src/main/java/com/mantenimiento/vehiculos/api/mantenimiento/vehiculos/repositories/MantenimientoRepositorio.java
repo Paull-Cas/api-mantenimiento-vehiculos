@@ -1,6 +1,7 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Mantenimiento;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.TipoMantenimiento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface MantenimientoRepositorio extends JpaRepository<Mantenimiento, Long> {
-    @Query("SELECT m FROM Mantenimiento m WHERE m.class = :tipo")
-    List<Mantenimiento> buscarPorTipo(@Param("tipo") Class<? extends Mantenimiento> tipo);
+
+    List<Mantenimiento> findByTipo(TipoMantenimiento tipo);
 }

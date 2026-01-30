@@ -2,6 +2,7 @@ package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.web;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.OrdenMantenimientoRequest;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.OrdenMantenimientoResponse;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.MantenimientoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.OrdenMantenimientoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +20,7 @@ public class OrdenMantenimientoControlador {
     // Roles con acceso: ADMIN_ORDENES_MANTENIMIENTO
     @PreAuthorize("hasAuthority('CREATE_ORDEN')")
     @PostMapping("/guardar")
-    public OrdenMantenimientoResponse create(@RequestBody OrdenMantenimientoRequest ordenMantenimientoRequest) {
+    public OrdenMantenimientoResponse create(@RequestBody OrdenMantenimientoRequest ordenMantenimientoRequest) throws MantenimientoNoEncontradoExcepcion {
         return ordenMantenimientoService.create(ordenMantenimientoRequest);
     }
 

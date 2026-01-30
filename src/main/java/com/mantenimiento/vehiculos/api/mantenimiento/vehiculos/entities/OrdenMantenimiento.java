@@ -2,10 +2,7 @@ package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.EstadoOrdenMantenimiento;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,43 +13,29 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class OrdenMantenimiento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String numeroOrden;
+    @ManyToOne
+    private Orden orden;
 
     @ManyToOne
     private Mantenimiento mantenimiento;
-
-    @ManyToOne
-    private Vehiculo vehiculo;
-
-    private LocalDate fechaIngreso;
-
-    private LocalDate fechaEntregaEstimada;
 
     private String descripcionProblema;
 
     @Enumerated(EnumType.STRING)
     private EstadoOrdenMantenimiento estado;
 
-    private BigDecimal costoTotal;
+    private BigDecimal costo;
 
-    private String observaciones;
-
-    private LocalDate fechaUltimaActualizacion;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
 
     @PrePersist
-    public void crear(){
-        this.fechaIngreso = LocalDate.now();
-        this.fechaUltimaActualizacion = LocalDate.now();
-        this.estado = EstadoOrdenMantenimiento.PENDIENTE;
-    }
-
-    @PreUpdate
-    public void actualizar() {
-        this.fechaUltimaActualizacion = LocalDate.now();
+    public void crear() {
+        this.estado = EstadoOrdenMantenimiento.EN_REVISION;
     }
 }

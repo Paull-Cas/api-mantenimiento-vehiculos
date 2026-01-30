@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ClienteResponse {
     private Long id;
+    private Long usuarioId;
     private String telefono;
     private String correoElectronico;
     private String direccion;

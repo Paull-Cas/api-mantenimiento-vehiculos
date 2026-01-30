@@ -11,6 +11,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.ClienteN
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.ClienteNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.ClienteMapper;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.ClienteRepositorio;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.UsuarioRepository;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,16 +28,23 @@ public class ClienteServiceImpl implements ClienteService {
     @Autowired
     private ClienteRepositorio clienteRepositorio;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @Override
     public ClienteNaturalResponse createClienteNatural(ClienteNaturalRequest clienteNaturalRequest) {
+        if (!verificarExistenciaUsuario(clienteNaturalRequest.getUsuarioId())) return null;
+
         ClienteNatural clienteNatural = ClienteMapper.toClienteNaturalEntity(clienteNaturalRequest);
         ClienteNatural clienteNaturalBD = clienteRepositorio.save(clienteNatural);
         return ClienteMapper.toClienteNaturalResponse(clienteNaturalBD);
     }
 
+
     @Override
     public ClienteNaturalResponse updateClienteNatural(Long id, ClienteNaturalRequest clienteRequest) throws ClienteNoEncontradoExcepcion {
         if (clienteRepositorio.existsById(id)) {
+            if (!verificarExistenciaUsuario(clienteRequest.getUsuarioId())) return null;
             ClienteNatural clienteNatural = ClienteMapper.toClienteNaturalEntity(clienteRequest);
             clienteNatural.setId(id);
             ClienteNatural clienteNaturalBD = clienteRepositorio.save(clienteNatural);
@@ -45,8 +53,13 @@ public class ClienteServiceImpl implements ClienteService {
         else throw new ClienteNoEncontradoExcepcion("Cliente no encontrado");
     }
 
+    private boolean verificarExistenciaUsuario(Long idUsuario) {
+        return usuarioRepository.existsById(idUsuario);
+    }
+
     @Override
     public ClienteJuridicoResponse createClienteJuridico(ClienteJuridicoRequest clienteJuridicoRequest) {
+        if (!verificarExistenciaUsuario(clienteJuridicoRequest.getUsuarioId())) return null;
         ClienteJuridico clienteJuridico = ClienteMapper.toClienteJuridicoEntity(clienteJuridicoRequest);
         ClienteJuridico clienteJuridicoBD = clienteRepositorio.save(clienteJuridico);
         return ClienteMapper.toClienteJuridicoResponse(clienteJuridicoBD);
@@ -56,6 +69,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public ClienteJuridicoResponse updateClienteJuridico(Long id, ClienteJuridicoRequest clienteRequest) throws ClienteNoEncontradoExcepcion {
         if (clienteRepositorio.existsById(id)) {
+            if (!verificarExistenciaUsuario(clienteRequest.getUsuarioId())) return null;
             ClienteJuridico clienteJuridico = ClienteMapper.toClienteJuridicoEntity(clienteRequest);
             clienteJuridico.setId(id);
             ClienteJuridico clienteJuridicoBD = clienteRepositorio.save(clienteJuridico);

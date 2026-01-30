@@ -25,6 +25,8 @@ public interface VehiculoService {
 
     List<VehiculoResponse> listByCliente(Long clienteId);
 
+    List<VehiculoResponse> misVehiculos();
+
     //Historial cuenta dto
     //List<VehiculoResponse> listHistorialVheiculo(Long vehiculoId) throws VehiculoNoEncontradoExcepcion;
 

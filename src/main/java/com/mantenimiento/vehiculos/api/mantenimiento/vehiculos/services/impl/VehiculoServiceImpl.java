@@ -4,11 +4,13 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request.Vehi
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.VehiculoPageReponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.VehiculoResponse;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Cliente;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Usuario;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Vehiculo;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.ClienteNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.VehiculoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.VehiculoMappers;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.ClienteRepositorio;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.UsuarioRepository;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.VehiculoRepositorio;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.VehiculoService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +35,13 @@ public class VehiculoServiceImpl implements VehiculoService {
     private VehiculoRepositorio vehiculoRepositorio;
 
     @Autowired
-    private VehiculoMappers vehiculoMapper;  // Cambié el nombre a "vehiculoMapper" para hacerlo consistente
+    private VehiculoMappers vehiculoMapper;
 
     @Autowired
     private ClienteRepositorio clienteRepo;
+
+    @Autowired
+    private UsuarioRepository usuarioRepo;
 
     @Override
     public VehiculoResponse saveVehiculo(VehiculoRequest vehiculoDto) throws ClienteNoEncontradoExcepcion {
@@ -77,7 +84,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     public List<VehiculoResponse> listVehiculos() {
         List<Vehiculo> vehiculos = vehiculoRepositorio.findAll();
         List<VehiculoResponse> vehiculoDtos = vehiculos.stream()
-                .map(vehiculoMapper::mapearVheiculo)  // Usando vehiculoMapper
+                .map(vehiculoMapper::mapearVheiculo)
                 .collect(Collectors.toList());
         return vehiculoDtos;
     }
@@ -86,7 +93,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     public List<VehiculoResponse> searchVehiculos(String keyword) {
         List<Vehiculo> vehiculos = vehiculoRepositorio.searchVehiculos(keyword);
         List<VehiculoResponse> vehiculoDtos = vehiculos.stream()
-                .map(vehiculoMapper::mapearVheiculo)  // Usando vehiculoMapper
+                .map(vehiculoMapper::mapearVheiculo)
                 .collect(Collectors.toList());
         return vehiculoDtos;
     }
@@ -94,8 +101,29 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     public List<VehiculoResponse> listByCliente(Long clienteId) {
         return vehiculoRepositorio.findByCliente_Id(clienteId).stream()
-                .map(vehiculoMapper::mapearVheiculo)  // Usando vehiculoMapper
+                .map(vehiculoMapper::mapearVheiculo)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VehiculoResponse> misVehiculos() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Buscar el usuario por username
+        Usuario usuario = usuarioRepo.findUserEntityByUsername(username);
+        log.info("USUARIO =========" + usuario.getUsername());
+        if (usuario == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+
+        // Buscar el cliente por usuarioId
+        Cliente cliente = clienteRepo.findAllByUsuarioId(usuario.getId());
+
+        return vehiculoRepositorio.findByClienteId(cliente.getId()).stream()
+                .map(vehiculoMapper::mapearVheiculo)
+                .collect(Collectors.toList());
+
     }
 
     @Override
@@ -103,7 +131,7 @@ public class VehiculoServiceImpl implements VehiculoService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Vehiculo> pagevehiculos = vehiculoRepositorio.findAll(pageable);
         List<VehiculoResponse> vehiculosres = pagevehiculos.getContent().stream()
-                .map(vehiculoMapper::mapearVheiculo)  // Usando vehiculoMapper
+                .map(vehiculoMapper::mapearVheiculo)
                 .collect(Collectors.toList());
 
         VehiculoPageReponse vehiculoPageReponse = new VehiculoPageReponse();
@@ -115,33 +143,6 @@ public class VehiculoServiceImpl implements VehiculoService {
 
         return vehiculoPageReponse;
     }
-    /*
-    @Override
-    public List<VehiculoResponse> listHistorialVheiculo(Long vehiculoId) throws VehiculoNoEncontradoExcepcion {
-        List<Vehiculo> vehiculos = vehiculoRepositorio.findAll(vehiculoId);
-        if (vehiculos.isEmpty()) {
-            throw new VehiculoNoEncontradoExcepcion("Vehiculo no encontrada o sin operaciones");
-        }
-        return vehiculos.stream().map(vehiculoss ->
-                        vehiculoMapper.mapearVheiculo(vehiculoss))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<VehiculoResponse> getHistorialVehiculo(Long id, int page, int size) throws VehiculoNoEncontradoExcepcion {
-
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Vehiculo> vehicuPage = vehiculoRepositorio.findById(id, pageRequest);
-
-        if (vehicuPage.isEmpty()) {
-            throw new VehiculoNoEncontradoExcepcion("Vehiculo no encontrada o sin operaciones");
-        }
-        List<VehiculoResponse> vehiculoResponses = vehicuPage.getContent().stream()
-                .map(vehiculo -> vehiculoMapper.mapearVheiculo(vehiculo))
-                .collect(Collectors.toList());
-        return vehiculoResponses;
-    }
-     */
 
 
 }

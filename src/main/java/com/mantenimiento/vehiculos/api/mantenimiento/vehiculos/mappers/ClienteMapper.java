@@ -16,41 +16,51 @@ import java.util.stream.Collectors;
 
 public class ClienteMapper {
 
-    public static ClienteNatural toClienteNaturalEntity(ClienteNaturalRequest clienteNaturalRequest) {
-        ClienteNatural clienteNatural = new ClienteNatural();
-        BeanUtils.copyProperties(clienteNaturalRequest, clienteNatural);
-        return clienteNatural;
+    // ---------- NATURAL ----------
+
+    public static ClienteNatural toClienteNaturalEntity(ClienteNaturalRequest request) {
+        ClienteNatural entity = new ClienteNatural();
+        BeanUtils.copyProperties(request, entity);
+        return entity;
     }
 
-    public static ClienteNaturalResponse toClienteNaturalResponse(ClienteNatural clienteNatural) {
-        ClienteNaturalResponse clienteNaturalResponse = new ClienteNaturalResponse();
-        BeanUtils.copyProperties(clienteNatural, clienteNaturalResponse);
-        return clienteNaturalResponse;
+    public static ClienteNaturalResponse toClienteNaturalResponse(ClienteNatural entity) {
+        ClienteNaturalResponse response = new ClienteNaturalResponse();
+        BeanUtils.copyProperties(entity, response);
+        return response;
     }
 
-    public static ClienteJuridico toClienteJuridicoEntity(ClienteJuridicoRequest clienteJuridicoRequest) {
-        ClienteJuridico clienteJuridico = new ClienteJuridico();
-        BeanUtils.copyProperties(clienteJuridicoRequest, clienteJuridico);
-        return clienteJuridico;
+    // ---------- JURÍDICO ----------
+
+    public static ClienteJuridico toClienteJuridicoEntity(ClienteJuridicoRequest request) {
+        ClienteJuridico entity = new ClienteJuridico();
+        BeanUtils.copyProperties(request, entity);
+        return entity;
     }
 
-    public static ClienteJuridicoResponse toClienteJuridicoResponse(ClienteJuridico clienteJuridico) {
-        ClienteJuridicoResponse clienteJuridicoResponse = new ClienteJuridicoResponse();
-        BeanUtils.copyProperties(clienteJuridico, clienteJuridicoResponse);
-        return clienteJuridicoResponse;
+    public static ClienteJuridicoResponse toClienteJuridicoResponse(ClienteJuridico entity) {
+        ClienteJuridicoResponse response = new ClienteJuridicoResponse();
+        BeanUtils.copyProperties(entity, response);
+        return response;
+    }
+
+    // ---------- GENÉRICO ----------
+
+    public static ClienteResponse toClienteResponse(Cliente cliente) {
+        if (cliente instanceof ClienteNatural) {
+            return toClienteNaturalResponse((ClienteNatural) cliente);
+        }
+        if (cliente instanceof ClienteJuridico) {
+            return toClienteJuridicoResponse((ClienteJuridico) cliente);
+        }
+        ClienteResponse response = new ClienteResponse();
+        BeanUtils.copyProperties(cliente, response);
+        return response;
     }
 
     public static List<ClienteResponse> toClienteResponseList(Page<Cliente> clientes) {
         return clientes.stream()
-                .map(cliente -> {
-                    if (cliente instanceof ClienteJuridico) {
-                        return toClienteJuridicoResponse((ClienteJuridico) cliente);
-                    }
-                    if (cliente instanceof ClienteNatural) {
-                        return toClienteNaturalResponse((ClienteNatural) cliente);
-                    }
-                    else return null;
-                })
+                .map(ClienteMapper::toClienteResponse)
                 .collect(Collectors.toList());
     }
 }

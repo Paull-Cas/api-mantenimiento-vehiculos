@@ -1,6 +1,6 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities;
 
-
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.EstadoVehiculo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,8 +12,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Vehiculo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +27,9 @@ public class Vehiculo {
     private String color;
     private String tipoCombustible;
 
+    @Enumerated(EnumType.STRING)
+    private EstadoVehiculo estado = EstadoVehiculo.DISPONIBLE;
+
     @Column(unique = true)
     private String numeroSerie;
 
@@ -36,5 +39,5 @@ public class Vehiculo {
     private Cliente cliente;
 
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrdenMantenimiento> mantenimientos;
+    private List<Orden> ordenes;
 }

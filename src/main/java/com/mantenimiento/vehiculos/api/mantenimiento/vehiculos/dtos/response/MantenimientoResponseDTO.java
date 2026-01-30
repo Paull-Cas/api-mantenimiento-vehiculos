@@ -1,16 +1,22 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response;
 
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.TipoMantenimiento;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MantenimientoResponseDTO {
     private Long id;
-    private String tipoServicio;
-    private TipoMantenimiento tipoMantenimiento;
+    private String nombre;
     private String descripcion;
-    private BigDecimal tiempoEmpleadoHoras;
+    private TipoMantenimiento tipo;
+    private BigDecimal precioMinimo;
+    private boolean activo;
 }

@@ -1,5 +1,6 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities;
 
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 

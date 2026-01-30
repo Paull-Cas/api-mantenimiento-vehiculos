@@ -16,24 +16,13 @@ import java.time.LocalDate;
 public class OrdenMantenimientoResponse {
 
     private Long id;
-
+    private Long ordenId;
     private String numeroOrden;
-
-    private Long idVehiculo;
-
-    private Long idMantenimiento;
-
-    private LocalDate fechaIngreso;
-
-    private LocalDate fechaEntregaEstimada;
-
+    private Long mantenimientoId;
+    private String nombreMantenimiento;
     private String descripcionProblema;
-
     private EstadoOrdenMantenimiento estado;
-
-    private BigDecimal costoTotal;
-
-    private String observaciones;
-
-    private LocalDate fechaUltimaActualizacion;
+    private BigDecimal costo;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
 }
