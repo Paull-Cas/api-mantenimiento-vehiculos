@@ -37,5 +37,6 @@ public class OrdenMantenimiento {
     @PrePersist
     public void crear() {
         this.estado = EstadoOrdenMantenimiento.EN_REVISION;
+        this.fechaInicio = LocalDate.now();
     }
 }

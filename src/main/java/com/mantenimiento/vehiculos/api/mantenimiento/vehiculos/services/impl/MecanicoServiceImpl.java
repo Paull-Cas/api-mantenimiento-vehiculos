@@ -7,9 +7,12 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.EstadoMecan
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.exceptions.MecanicoNoEncontradoExcepcion;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.MecanicoMapper;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.MecanicoRepositorio;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.UsuarioRepository;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.MecanicoService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,27 +25,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MecanicoServiceImpl implements MecanicoService {
 
+    @Autowired
     private final MecanicoRepositorio mecanicoRepositorio;
+
     private final MecanicoMapper mecanicoMapper;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
     public MecanicoResponse crearMecanico(MecanicoRequest request) {
-        log.info("Creando nuevo mecánico: {} {}", request.getNombre(), request.getApellido());
-        
+        if (!verificarExistenciaUsuario(request.getUsuarioId())) throw new EntityNotFoundException("Usuario no encontrado");
         Mecanico mecanico = mecanicoMapper.toEntity(request);
         mecanico.setEstado(EstadoMecanico.DISPONIBLE);
         mecanico.setActivo(true);
         
         Mecanico mecanicoGuardado = mecanicoRepositorio.save(mecanico);
-        
-        log.info("Mecánico creado exitosamente con ID: {}", mecanicoGuardado.getId());
+
         return mecanicoMapper.toResponse(mecanicoGuardado);
     }
 
     @Override
     public MecanicoResponse actualizarMecanico(Long id, MecanicoRequest request) {
-        log.info("Actualizando mecánico ID: {}", id);
-        
+        if (!verificarExistenciaUsuario(request.getUsuarioId())) throw new EntityNotFoundException("Usuario no encontrado");;
         Mecanico mecanico = mecanicoRepositorio.findById(id)
                 .orElseThrow(() -> new MecanicoNoEncontradoExcepcion(
                         "Mecánico no encontrado con ID: " + id));
@@ -54,9 +59,12 @@ public class MecanicoServiceImpl implements MecanicoService {
         mecanico.setFechaIngreso(request.getFechaIngreso());
         
         Mecanico mecanicoActualizado = mecanicoRepositorio.save(mecanico);
-        
-        log.info("Mecánico actualizado exitosamente");
+
         return mecanicoMapper.toResponse(mecanicoActualizado);
+    }
+
+    private boolean verificarExistenciaUsuario(Long idUsuario) {
+        return usuarioRepository.existsById(idUsuario);
     }
 
     @Override
@@ -94,8 +102,6 @@ public class MecanicoServiceImpl implements MecanicoService {
 
     @Override
     public void desactivarMecanico(Long id) {
-        log.info("Desactivando mecánico ID: {}", id);
-        
         Mecanico mecanico = mecanicoRepositorio.findById(id)
                 .orElseThrow(() -> new MecanicoNoEncontradoExcepcion(
                         "Mecánico no encontrado con ID: " + id));
@@ -108,14 +114,10 @@ public class MecanicoServiceImpl implements MecanicoService {
         mecanico.setActivo(false);
         mecanico.setEstado(EstadoMecanico.INACTIVO);
         mecanicoRepositorio.save(mecanico);
-        
-        log.info("Mecánico desactivado exitosamente");
     }
 
     @Override
     public void activarMecanico(Long id) {
-        log.info("Activando mecánico ID: {}", id);
-        
         Mecanico mecanico = mecanicoRepositorio.findById(id)
                 .orElseThrow(() -> new MecanicoNoEncontradoExcepcion(
                         "Mecánico no encontrado con ID: " + id));
@@ -123,8 +125,7 @@ public class MecanicoServiceImpl implements MecanicoService {
         mecanico.setActivo(true);
         mecanico.setEstado(EstadoMecanico.DISPONIBLE);
         mecanicoRepositorio.save(mecanico);
-        
-        log.info("Mecánico activado exitosamente");
+
     }
 
     @Override
@@ -137,7 +138,14 @@ public class MecanicoServiceImpl implements MecanicoService {
         
         mecanico.setEstado(nuevoEstado);
         mecanicoRepositorio.save(mecanico);
-        
-        log.info("Estado del mecánico actualizado exitosamente");
+
+    }
+
+    @Override
+    public void eliminarMencanico(Long id) {
+        if (!mecanicoRepositorio.existsById(id)) {
+            throw new EntityNotFoundException("No existe el mecánico con id: " + id);
+        }
+        mecanicoRepositorio.deleteById(id);
     }
 }

@@ -19,26 +19,31 @@ public class ClienteControlador {
     @Autowired
     private ClienteService clienteService;
 
+    @PreAuthorize("hasAuthority('CREATE_CLIENTE')")
     @PostMapping("/natural/guardar")
     public ClienteNaturalResponse createClienteNatural(@RequestBody ClienteNaturalRequest clienteNaturalRequest){
         return clienteService.createClienteNatural(clienteNaturalRequest);
     }
 
+    @PreAuthorize("hasAuthority('UPDATE_CLIENTE')")
     @PutMapping("/natural/actualizar/{id}")
     public ClienteNaturalResponse actualizarClienteNatural(@PathVariable Long id, @RequestBody ClienteNaturalRequest clienteNaturalRequest){
         return clienteService.updateClienteNatural(id, clienteNaturalRequest);
     }
 
+    @PreAuthorize("hasAuthority('CREATE_CLIENTE')")
     @PostMapping("/juridico/guardar")
     public ClienteJuridicoResponse createClienteJuridico(@RequestBody ClienteJuridicoRequest clienteJuridicoRequest){
         return clienteService.createClienteJuridico(clienteJuridicoRequest);
     }
 
+    @PreAuthorize("hasAuthority('UPDATE_CLIENTE')")
     @PutMapping("/juridico/actualizar/{id}")
     public ClienteJuridicoResponse actualizarClienteJuridico(@PathVariable Long id, @RequestBody ClienteJuridicoRequest clienteJuridicoRequest){
         return clienteService.updateClienteJuridico(id, clienteJuridicoRequest);
     }
 
+    @PreAuthorize("hasAuthority('READ_CLIENTE')")
     @GetMapping("/listar")
     public List<ClienteResponse> listarClientes(@RequestParam(name="keyword", defaultValue = "") String keyword,
                                                 @RequestParam(name="tipo", defaultValue = "natural") String tipo,
@@ -48,11 +53,13 @@ public class ClienteControlador {
         return clienteService.readAllClientes(keyword, tipo, page, size);
     }
 
+    @PreAuthorize("hasAuthority('READ_CLIENTE')")
     @GetMapping("/por-id/{id}")
     public ClienteResponse clientePorId(@PathVariable Long id){
         return clienteService.readClienteById(id);
     }
 
+    @PreAuthorize("hasAuthority('DELETE_CLIENTE')")
     @DeleteMapping("/eliminar/{id}")
     public void eliminarCliente(@PathVariable Long id){
         clienteService.delete(id);

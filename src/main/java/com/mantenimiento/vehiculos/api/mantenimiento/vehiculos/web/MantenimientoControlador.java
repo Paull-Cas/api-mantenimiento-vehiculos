@@ -21,24 +21,28 @@ public class MantenimientoControlador {
     @Autowired
     private MantenimientoService mantenimientoService;
 
+    @PreAuthorize("hasAuthority('READ_MANTENIMIENTO')")
     @GetMapping("/{idMantenimiento}")
     public ResponseEntity<MantenimientoResponseDTO> getMantenimientoPorId(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {
         MantenimientoResponseDTO mantenimiento = mantenimientoService.getMantenimientoPorId(idMantenimiento);
         return ResponseEntity.ok(mantenimiento);
     }
 
+    @PreAuthorize("hasAuthority('READ_MANTENIMIENTO')")
     @GetMapping
     public ResponseEntity<List<MantenimientoResponseDTO>> getMantenimientos() {
         List<MantenimientoResponseDTO> mantenimientos = mantenimientoService.getTodosLosMantenimientos();
         return ResponseEntity.ok(mantenimientos);
     }
 
+    @PreAuthorize("hasAuthority('CREATE_MANTENIMIENTO')")
     @PostMapping
     public ResponseEntity<MantenimientoResponseDTO> crearMantenimiento(@RequestBody MantenimientoRequest mantenimientoRequest) {
         MantenimientoResponseDTO mantenimiento = mantenimientoService.saveMantenimiento(mantenimientoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(mantenimiento);
     }
 
+    @PreAuthorize("hasAuthority('UPDATE_MANTENIMIENTO')")
     @PutMapping("/{idMantenimiento}")
     public ResponseEntity<MantenimientoResponseDTO> actualizarMantenimiento(
             @PathVariable Long idMantenimiento,
@@ -47,18 +51,21 @@ public class MantenimientoControlador {
         return ResponseEntity.ok(mantenimiento);
     }
 
+    @PreAuthorize("hasAuthority('DELETE_MANTENIMIENTO')")
     @DeleteMapping("/{idMantenimiento}")
     public ResponseEntity<Void> eliminarMantenimiento(@PathVariable Long idMantenimiento) throws MantenimientoNoEncontradoExcepcion {
         mantenimientoService.deleteMantenimiento(idMantenimiento);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAuthority('READ_MANTENIMIENTO')")
     @GetMapping("/search")
     public ResponseEntity<List<MantenimientoResponseDTO>> filtrarPorTipo(@RequestParam("tipo") TipoMantenimiento tipo) {
         List<MantenimientoResponseDTO> mantenimientos = mantenimientoService.buscarMantenimientosPorTipo(tipo);
         return ResponseEntity.ok(mantenimientos);
     }
 
+    @PreAuthorize("hasAuthority('READ_MANTENIMIENTO')")
     @GetMapping("/paginacion")
     public ResponseEntity<MantenimientoResponsePageDTO> getMantenimientosPaginados(
             @RequestParam(name = "page", defaultValue = "0") int page,

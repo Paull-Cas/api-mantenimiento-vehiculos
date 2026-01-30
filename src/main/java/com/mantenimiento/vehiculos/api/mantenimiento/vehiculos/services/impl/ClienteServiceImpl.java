@@ -13,6 +13,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.ClienteMa
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.ClienteRepositorio;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.UsuarioRepository;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.ClienteService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +34,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteNaturalResponse createClienteNatural(ClienteNaturalRequest clienteNaturalRequest) {
-        if (!verificarExistenciaUsuario(clienteNaturalRequest.getUsuarioId())) return null;
+        if (!verificarExistenciaUsuario(clienteNaturalRequest.getUsuarioId())) throw new EntityNotFoundException("Usuario no encontrado");;
 
         ClienteNatural clienteNatural = ClienteMapper.toClienteNaturalEntity(clienteNaturalRequest);
         ClienteNatural clienteNaturalBD = clienteRepositorio.save(clienteNatural);
@@ -44,7 +45,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public ClienteNaturalResponse updateClienteNatural(Long id, ClienteNaturalRequest clienteRequest) throws ClienteNoEncontradoExcepcion {
         if (clienteRepositorio.existsById(id)) {
-            if (!verificarExistenciaUsuario(clienteRequest.getUsuarioId())) return null;
+            if (!verificarExistenciaUsuario(clienteRequest.getUsuarioId())) throw new EntityNotFoundException("Usuario no encontrado");;
             ClienteNatural clienteNatural = ClienteMapper.toClienteNaturalEntity(clienteRequest);
             clienteNatural.setId(id);
             ClienteNatural clienteNaturalBD = clienteRepositorio.save(clienteNatural);

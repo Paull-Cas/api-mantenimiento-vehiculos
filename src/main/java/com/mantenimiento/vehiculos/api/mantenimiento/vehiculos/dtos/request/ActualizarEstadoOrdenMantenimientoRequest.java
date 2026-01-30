@@ -16,6 +16,6 @@ public class ActualizarEstadoOrdenMantenimientoRequest {
     
     private Long ordenMantenimientoId;
     private EstadoOrdenMantenimiento nuevoEstado;
-    private BigDecimal costo; // Opcional: para cuando se cotiza
-    private String observaciones;
+    private BigDecimal costo;
+    private String descripcionProblema;
 }

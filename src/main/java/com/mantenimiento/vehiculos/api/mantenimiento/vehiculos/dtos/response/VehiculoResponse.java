@@ -1,5 +1,6 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response;
 
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.EstadoVehiculo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class VehiculoResponse {
     private int año;
     private String color;
     private String tipoCombustible;
+    private EstadoVehiculo estado = EstadoVehiculo.DISPONIBLE;
     private String numeroSerie;
     private int kilometraje;
     private Long propietarioId;

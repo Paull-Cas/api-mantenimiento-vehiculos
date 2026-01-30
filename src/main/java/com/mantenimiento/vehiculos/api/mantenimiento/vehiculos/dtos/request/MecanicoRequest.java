@@ -1,5 +1,6 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class MecanicoRequest {
-
+    @NotNull(message = "El usuario ID es obligatorio")
     private Long usuarioId;
     private String nombre;
     private String apellido;

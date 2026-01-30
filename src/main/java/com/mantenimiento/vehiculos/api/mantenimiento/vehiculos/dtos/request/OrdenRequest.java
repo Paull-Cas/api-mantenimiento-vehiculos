@@ -14,6 +14,5 @@ import java.util.List;
 public class OrdenRequest {
     
     private Long vehiculoId;
-    private List<Long> mantenimientosIds; // Lista de IDs de mantenimientos a realizar
-    private String observacionesGenerales;
+    private List<Long> mantenimientosIds;
 }

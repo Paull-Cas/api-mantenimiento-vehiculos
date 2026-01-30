@@ -25,4 +25,6 @@ public interface MecanicoService {
     void activarMecanico(Long id);
     
     void cambiarEstado(Long id, EstadoMecanico nuevoEstado);
+
+    void eliminarMencanico(Long id);
 }

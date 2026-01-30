@@ -63,26 +63,33 @@ public class MecanicoControlador {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAuthority('DELETE_MECANICO')")
-    @DeleteMapping("/{id}/desactivar")
+    @PreAuthorize("hasAuthority('UPDATE_MECANICO')")
+    @PutMapping("/desactivar/{id}")
     public ResponseEntity<Void> desactivarMecanico(@PathVariable Long id) {
         mecanicoService.desactivarMecanico(id);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAuthority('UPDATE_MECANICO')")
-    @PutMapping("/{id}/activar")
+    @PutMapping("/activar/{id}")
     public ResponseEntity<Void> activarMecanico(@PathVariable Long id) {
         mecanicoService.activarMecanico(id);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAuthority('UPDATE_MECANICO')")
-    @PutMapping("/{id}/cambiar-estado")
+    @PutMapping("/cambiar-estado/{id}")
     public ResponseEntity<Void> cambiarEstado(
             @PathVariable Long id,
             @RequestParam EstadoMecanico nuevoEstado) {
         mecanicoService.cambiarEstado(id, nuevoEstado);
         return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAuthority('DELETE_MECANICO')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarMecanico(@PathVariable Long id) {
+        mecanicoService.eliminarMencanico(id);
+        return ResponseEntity.noContent().build();
     }
 }

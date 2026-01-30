@@ -23,6 +23,7 @@ public class OrdenControlador {
 
     // ========== RECEPCIÓN Y CREACIÓN DE ORDEN ==========
 
+    @PreAuthorize("hasAuthority('CREATE_ORDEN')")
     @PostMapping("/crear")
     public ResponseEntity<OrdenResponse> crearOrden(@RequestBody OrdenRequest request) throws VehiculoNoEncontradoExcepcion, MantenimientoNoEncontradoExcepcion {
         OrdenResponse response = ordenService.crearOrden(request);
@@ -31,6 +32,7 @@ public class OrdenControlador {
 
     // ========== ASIGNACIÓN DE MECÁNICOS ==========
 
+    @PreAuthorize("hasAuthority('ASIGNAR_MECANICO')")
     @PostMapping("/asignar-mecanicos")
     public ResponseEntity<OrdenResponse> asignarMecanicos(@RequestBody AsignarMecanicoRequest request) {
         OrdenResponse response = ordenService.asignarMecanicos(request);
@@ -39,6 +41,7 @@ public class OrdenControlador {
 
     // ========== GESTIÓN DE ESTADOS DE MANTENIMIENTO ==========
 
+    @PreAuthorize("hasAuthority('UPDATE_ORDEN_MANTENIMIENTO')")
     @PutMapping("/mantenimiento/actualizar-estado")
     public ResponseEntity<OrdenMantenimientoResponse> actualizarEstadoMantenimiento(
             @RequestBody ActualizarEstadoOrdenMantenimientoRequest request) {
@@ -46,6 +49,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('INICIAR_TRABAJO')")
     @PostMapping("/{ordenId}/mecanico/{mecanicoId}/iniciar-trabajo")
     public ResponseEntity<OrdenResponse> iniciarTrabajo(
             @PathVariable Long ordenId,
@@ -54,6 +58,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('FINALIZAR_TRABAJO')")
     @PostMapping("/{ordenId}/mecanico/{mecanicoId}/finalizar-trabajo")
     public ResponseEntity<OrdenResponse> finalizarTrabajoMecanico(
             @PathVariable Long ordenId,
@@ -62,43 +67,40 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
+    // ========== PAGOS ==========
 
+    @PreAuthorize("hasAuthority('CREATE_PAGO')")
     @PostMapping("/registrar-pago")
     public ResponseEntity<PagoResponse> registrarPago(@RequestBody PagoRequest request) {
         PagoResponse response = ordenService.registrarPago(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/{ordenId}/entregar-vehiculo")
+    // ========== ENTREGA ==========
+
+    @PreAuthorize("hasAuthority('ENTREGAR_VEHICULO')")
+    @PostMapping("/entregar-vehiculo/{ordenId}")
     public ResponseEntity<OrdenResponse> entregarVehiculo(@PathVariable Long ordenId) {
         OrdenResponse response = ordenService.entregarVehiculo(ordenId);
         return ResponseEntity.ok(response);
     }
 
     // ========== CANCELACIÓN ==========
-    
-    @PreAuthorize("hasAuthority('DELETE_ORDEN')")
-    @PostMapping("/{ordenId}/cancelar")
+
+    @PreAuthorize("hasAuthority('CANCELAR_ORDEN')")
+    @PostMapping("/cancelar/{ordenId}")
     public ResponseEntity<OrdenResponse> cancelarOrden(
-            @PathVariable Long ordenId,
-            @RequestParam(required = false) String motivo) {
-        OrdenResponse response = ordenService.cancelarOrden(ordenId, motivo);
+            @PathVariable Long ordenId) {
+        OrdenResponse response = ordenService.cancelarOrden(ordenId);
         return ResponseEntity.ok(response);
     }
 
     // ========== CONSULTAS ==========
-    
+
     @PreAuthorize("hasAuthority('READ_ORDEN')")
     @GetMapping("/{id}")
     public ResponseEntity<OrdenResponse> obtenerOrdenPorId(@PathVariable Long id) {
         OrdenResponse response = ordenService.obtenerOrdenPorId(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @PreAuthorize("hasAuthority('READ_ORDEN')")
-    @GetMapping("/numero/{numeroOrden}")
-    public ResponseEntity<OrdenResponse> obtenerOrdenPorNumero(@PathVariable String numeroOrden) {
-        OrdenResponse response = ordenService.obtenerOrdenPorNumero(numeroOrden);
         return ResponseEntity.ok(response);
     }
 
