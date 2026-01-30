@@ -61,7 +61,7 @@ public class VehiculoControlador {
         return vehiculoService.listByCliente(clienteId);
     }
 
-    @PreAuthorize("hasAuthority('READ_VEHICULO')")//permiso para el cliente
+    @PreAuthorize("hasAuthority('READ_MIS_VEHICULOS)")//permiso para el cliente
     @GetMapping("/mis-vehiculos")
     public List<VehiculoResponse> listarMisVehiculos() {
         return vehiculoService.misVehiculos();
