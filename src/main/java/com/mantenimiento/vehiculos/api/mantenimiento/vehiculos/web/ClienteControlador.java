@@ -43,7 +43,7 @@ public class ClienteControlador {
         return clienteService.updateClienteJuridico(id, clienteJuridicoRequest);
     }
 
-    @PreAuthorize("hasAuthority('READ_CLIENTE')")
+    @PreAuthorize("hasAuthority('LIST_CLIENTE')") //cambiar
     @GetMapping("/listar")
     public List<ClienteResponse> listarClientes(@RequestParam(name="keyword", defaultValue = "") String keyword,
                                                 @RequestParam(name="tipo", defaultValue = "natural") String tipo,
