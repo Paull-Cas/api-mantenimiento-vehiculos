@@ -16,4 +16,5 @@ public class ClienteRequest {
     private String telefono;
     private String correoElectronico;
     private String direccion;
+    private String tipo;
 }
