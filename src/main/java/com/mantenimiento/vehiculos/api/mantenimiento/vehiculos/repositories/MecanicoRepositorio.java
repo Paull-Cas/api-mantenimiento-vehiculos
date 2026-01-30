@@ -21,4 +21,6 @@ public interface MecanicoRepositorio extends JpaRepository<Mecanico, Long> {
            "OR :especialidad IS NULL OR :especialidad = '')")
     List<Mecanico> findDisponiblesPorEspecialidad(@Param("estado") EstadoMecanico estado, 
                                                    @Param("especialidad") String especialidad);
+
+    Mecanico findByUsuarioId(Long id);
 }

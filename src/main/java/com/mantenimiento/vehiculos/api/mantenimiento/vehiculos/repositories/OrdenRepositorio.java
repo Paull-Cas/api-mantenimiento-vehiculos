@@ -1,5 +1,6 @@
 package com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories;
 
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Mecanico;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.entities.Orden;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.EstadoOrden;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,4 +30,10 @@ public interface OrdenRepositorio extends JpaRepository<Orden, Long> {
     
     @Query("SELECT o FROM Orden o WHERE o.vehiculo.cliente.id = :clienteId")
     List<Orden> findByClienteId(@Param("clienteId") Long clienteId);
+
+    @Query("SELECT DISTINCT om.orden FROM OrdenMecanico om WHERE om.mecanico.id = :mecanicoId ORDER BY om.orden.fechaIngreso DESC")
+    List<Orden> findByVehiculoClienteIdOrderByFechaIngresoDesc(@Param("mecanicoId") Long mecanicoId);
+
+    @Query("SELECT DISTINCT om.orden FROM OrdenMecanico om WHERE om.mecanico.id = :mecanicoId ORDER BY om.orden.fechaIngreso DESC")
+    List<Orden> findByMecanicoIdOrderByFechaIngresoDesc(@Param("mecanicoId") Long mecanicoId);
 }

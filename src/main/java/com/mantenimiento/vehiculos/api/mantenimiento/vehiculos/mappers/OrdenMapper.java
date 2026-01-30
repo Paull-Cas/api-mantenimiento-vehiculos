@@ -19,17 +19,21 @@ public class OrdenMapper {
                 .fechaCierre(orden.getFechaCierre())
                 .estado(orden.getEstado())
                 .total(orden.getTotal())
-                .mantenimientos(orden.getOrdenesMantenimiento() != null 
-                    ? orden.getOrdenesMantenimiento().stream()
+                .mantenimientos(orden.getOrdenesMantenimiento() != null
+                        ? orden.getOrdenesMantenimiento().stream()
                         .map(OrdenMantenimientoMapper::toResponse)
                         .collect(Collectors.toList())
-                    : null)
+                        : null)
                 .mecanicosAsignados(orden.getOrdenesMecanicos() != null
-                    ? orden.getOrdenesMecanicos().stream()
+                        ? orden.getOrdenesMecanicos().stream()
                         .map(OrdenMecanicoMapper::toMecanicoAsignadoResponse)
                         .collect(Collectors.toList())
-                    : null)
+                        : null)
                 .pagado(orden.getPago() != null && orden.getPago().isConfirmado())
                 .build();
+    }
+
+    public OrdenResponse mapearOrden(Orden orden) {
+        return toResponse(orden);
     }
 }

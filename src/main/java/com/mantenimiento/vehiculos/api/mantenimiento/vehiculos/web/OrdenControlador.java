@@ -22,16 +22,17 @@ public class OrdenControlador {
     private final OrdenService ordenService;
 
     // ========== RECEPCIÓN Y CREACIÓN DE ORDEN ==========
-
+    // Roles: Recepcionista, Supervisor de Mecánicos, Administrador
     @PreAuthorize("hasAuthority('CREATE_ORDEN')")
     @PostMapping("/crear")
-    public ResponseEntity<OrdenResponse> crearOrden(@RequestBody OrdenRequest request) throws VehiculoNoEncontradoExcepcion, MantenimientoNoEncontradoExcepcion {
+    public ResponseEntity<OrdenResponse> crearOrden(@RequestBody OrdenRequest request)
+            throws VehiculoNoEncontradoExcepcion, MantenimientoNoEncontradoExcepcion {
         OrdenResponse response = ordenService.crearOrden(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // ========== ASIGNACIÓN DE MECÁNICOS ==========
-
+    // Roles: Supervisor de Mecánicos, Administrador
     @PreAuthorize("hasAuthority('ASIGNAR_MECANICO')")
     @PostMapping("/asignar-mecanicos")
     public ResponseEntity<OrdenResponse> asignarMecanicos(@RequestBody AsignarMecanicoRequest request) {
@@ -40,8 +41,8 @@ public class OrdenControlador {
     }
 
     // ========== GESTIÓN DE ESTADOS DE MANTENIMIENTO ==========
-
-    @PreAuthorize("hasAuthority('UPDATE_ORDEN_MANTENIMIENTO')")
+    // Roles: Mecánico (sus órdenes), Supervisor de Mecánicos (todas), Administrador
+    @PreAuthorize("hasAuthority('CAMBIAR_ESTADO_ORDEN')")
     @PutMapping("/mantenimiento/actualizar-estado")
     public ResponseEntity<OrdenMantenimientoResponse> actualizarEstadoMantenimiento(
             @RequestBody ActualizarEstadoOrdenMantenimientoRequest request) {
@@ -49,6 +50,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
+    // Roles: Mecánico (sus trabajos), Supervisor de Mecánicos, Administrador
     @PreAuthorize("hasAuthority('INICIAR_TRABAJO')")
     @PostMapping("/{ordenId}/mecanico/{mecanicoId}/iniciar-trabajo")
     public ResponseEntity<OrdenResponse> iniciarTrabajo(
@@ -58,6 +60,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
+    // Roles: Mecánico (sus trabajos), Supervisor de Mecánicos, Administrador
     @PreAuthorize("hasAuthority('FINALIZAR_TRABAJO')")
     @PostMapping("/{ordenId}/mecanico/{mecanicoId}/finalizar-trabajo")
     public ResponseEntity<OrdenResponse> finalizarTrabajoMecanico(
@@ -68,7 +71,7 @@ public class OrdenControlador {
     }
 
     // ========== PAGOS ==========
-
+    // Roles: Encargado de Pagos, Administrador
     @PreAuthorize("hasAuthority('CREATE_PAGO')")
     @PostMapping("/registrar-pago")
     public ResponseEntity<PagoResponse> registrarPago(@RequestBody PagoRequest request) {
@@ -77,7 +80,7 @@ public class OrdenControlador {
     }
 
     // ========== ENTREGA ==========
-
+    // Roles: Recepcionista, Supervisor de Mecánicos, Administrador
     @PreAuthorize("hasAuthority('ENTREGAR_VEHICULO')")
     @PostMapping("/entregar-vehiculo/{ordenId}")
     public ResponseEntity<OrdenResponse> entregarVehiculo(@PathVariable Long ordenId) {
@@ -86,17 +89,16 @@ public class OrdenControlador {
     }
 
     // ========== CANCELACIÓN ==========
-
+    // Roles: Supervisor de Mecánicos, Administrador
     @PreAuthorize("hasAuthority('CANCELAR_ORDEN')")
     @PostMapping("/cancelar/{ordenId}")
-    public ResponseEntity<OrdenResponse> cancelarOrden(
-            @PathVariable Long ordenId) {
+    public ResponseEntity<OrdenResponse> cancelarOrden(@PathVariable Long ordenId) {
         OrdenResponse response = ordenService.cancelarOrden(ordenId);
         return ResponseEntity.ok(response);
     }
 
-    // ========== CONSULTAS ==========
-
+    // ========== CONSULTAS GENERALES ==========
+    // Roles: Recepcionista, Mecánico, Encargado de Pagos, Supervisor, Administrador
     @PreAuthorize("hasAuthority('READ_ORDEN')")
     @GetMapping("/{id}")
     public ResponseEntity<OrdenResponse> obtenerOrdenPorId(@PathVariable Long id) {
@@ -104,6 +106,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
+    // Roles: Recepcionista, Encargado de Pagos, Supervisor, Administrador
     @PreAuthorize("hasAuthority('READ_ORDEN')")
     @GetMapping("/vehiculo/{vehiculoId}")
     public ResponseEntity<List<OrdenResponse>> obtenerOrdenesPorVehiculo(@PathVariable Long vehiculoId) {
@@ -111,6 +114,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
+    // Roles: Recepcionista, Encargado de Pagos, Supervisor, Administrador
     @PreAuthorize("hasAuthority('READ_ORDEN')")
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<OrdenResponse>> obtenerOrdenesPorCliente(@PathVariable Long clienteId) {
@@ -118,6 +122,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
+    // Roles: Todos los internos
     @PreAuthorize("hasAuthority('READ_ORDEN')")
     @GetMapping("/buscar")
     public ResponseEntity<Page<OrdenResponse>> buscarOrdenes(
@@ -128,10 +133,33 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAuthority('READ_ORDEN')")
+    // Roles: Recepcionista, Encargado de Pagos, Supervisor, Administrador
+    @PreAuthorize("hasAuthority('CALCULAR_TOTAL_ORDEN')")
     @GetMapping("/{ordenId}/calcular-total")
     public ResponseEntity<OrdenResponse> calcularTotal(@PathVariable Long ordenId) {
         OrdenResponse response = ordenService.calcularTotal(ordenId);
+        return ResponseEntity.ok(response);
+    }
+
+    // ========== ENDPOINTS PARA CLIENTE ==========
+
+    // Roles: Cliente (solo sus propias órdenes)
+    @PreAuthorize("hasAuthority('READ_ORDEN_PROPIA')")
+    @GetMapping("/mis-ordenes")
+    public ResponseEntity<List<OrdenResponse>> obtenerMisOrdenes() {
+        // El servicio debe obtener el cliente del usuario autenticado
+        List<OrdenResponse> response = ordenService.obtenerOrdenesDelClienteAutenticado();
+        return ResponseEntity.ok(response);
+    }
+
+    // ========== ENDPOINTS PARA MECÁNICO ==========
+
+    // Roles: Mecánico (solo órdenes asignadas a él), Supervisor, Administrador
+    @PreAuthorize("hasAuthority('READ_ORDEN_PROPIA') or hasAuthority('READ_ORDEN')")
+    @GetMapping("/mis-trabajos")
+    public ResponseEntity<List<OrdenResponse>> obtenerMisTrabajos() {
+        // El servicio debe obtener las órdenes asignadas al mecánico autenticado
+        List<OrdenResponse> response = ordenService.obtenerOrdenesDelMecanicoAutenticado();
         return ResponseEntity.ok(response);
     }
 }

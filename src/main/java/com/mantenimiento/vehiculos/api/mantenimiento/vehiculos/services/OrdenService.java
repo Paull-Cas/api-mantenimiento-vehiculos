@@ -32,4 +32,10 @@ public interface OrdenService {
     Page<OrdenResponse> buscarOrdenes(String keyword, int page, int size);
 
     OrdenResponse calcularTotal(Long ordenId);
+
+
+    List<OrdenResponse> obtenerOrdenesDelClienteAutenticado();
+    List<OrdenResponse> obtenerOrdenesDelMecanicoAutenticado();
+
+
 }

@@ -10,8 +10,11 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.*;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.OrdenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +32,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrdenServiceImpl implements OrdenService {
 
-    private final OrdenRepositorio ordenRepositorio;
-    private final VehiculoRepositorio vehiculoRepositorio;
-    private final MantenimientoRepositorio mantenimientoRepositorio;
-    private final OrdenMantenimientoRepositorio ordenMantenimientoRepositorio;
-    private final MecanicoRepositorio mecanicoRepositorio;
-    private final OrdenMecanicoRepositorio ordenMecanicoRepositorio;
-    private final PagoRepositorio pagoRepositorio;
-    
+    @Autowired
+    private OrdenRepositorio ordenRepositorio;
+    @Autowired
+    private VehiculoRepositorio vehiculoRepositorio;
+    @Autowired
+    private MantenimientoRepositorio mantenimientoRepositorio;
+    @Autowired
+    private OrdenMantenimientoRepositorio ordenMantenimientoRepositorio;
+    @Autowired
+    private MecanicoRepositorio mecanicoRepositorio;
+    @Autowired
+    private OrdenMecanicoRepositorio ordenMecanicoRepositorio;
+    @Autowired
+    private PagoRepositorio pagoRepositorio;
+    @Autowired
+    private UsuarioRepository usuarioRepo;
+
+    @Autowired
+    private ClienteRepositorio clienteRepo;
+
+    @Autowired
+    private MecanicoRepositorio mecanicoRepo;
+
     private final OrdenMapper ordenMapper;
     private final MecanicoMapper mecanicoMapper;
     private final PagoMapper pagoMapper;
@@ -424,7 +442,55 @@ public class OrdenServiceImpl implements OrdenService {
         calcularTotalInterno(orden);
         return ordenMapper.toResponse(orden);
     }
-    
+
+    @Override
+    public List<OrdenResponse> obtenerOrdenesDelClienteAutenticado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        Usuario usuario = usuarioRepo.findUserEntityByUsername(username);
+        log.info("USUARIO =========" + usuario.getUsername());
+
+        if (usuario == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+
+        Cliente cliente = clienteRepo.findAllByUsuarioId(usuario.getId());
+
+        if (cliente == null) {
+            throw new RuntimeException("Cliente no encontrado");
+        }
+
+        // Usar repositorio para evitar problemas con lazy loading
+        return ordenRepositorio.findByVehiculoClienteIdOrderByFechaIngresoDesc(cliente.getId()).stream()
+                .map(ordenMapper::mapearOrden)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OrdenResponse> obtenerOrdenesDelMecanicoAutenticado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        Usuario usuario = usuarioRepo.findUserEntityByUsername(username);
+        log.info("USUARIO =========" + usuario.getUsername());
+
+        if (usuario == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+
+        Mecanico mecanico = mecanicoRepo.findByUsuarioId(usuario.getId());
+
+        if (mecanico == null) {
+            throw new RuntimeException("Mecánico no encontrado");
+        }
+
+        // Usar repositorio para evitar problemas con lazy loading
+        return ordenRepositorio.findByMecanicoIdOrderByFechaIngresoDesc(mecanico.getId()).stream()
+                .map(ordenMapper::mapearOrden)
+                .collect(Collectors.toList());
+    }
+
     private void validarVehiculoDisponible(Vehiculo vehiculo) {
         if (vehiculo.getEstado() == EstadoVehiculo.EN_MANTENIMIENTO) {
             // Verificar si tiene órdenes abiertas o en proceso
@@ -432,10 +498,10 @@ public class OrdenServiceImpl implements OrdenService {
                     vehiculo.getId(),
                     Arrays.asList(EstadoOrden.ABIERTA, EstadoOrden.EN_PROCESO)
             );
-            
+
             if (!ordenesActivas.isEmpty()) {
                 throw new IllegalStateException(
-                        "El vehículo ya tiene una orden de mantenimiento activa: " + 
+                        "El vehículo ya tiene una orden de mantenimiento activa: " +
                         ordenesActivas.get(0).getNumeroOrden());
             }
         }
