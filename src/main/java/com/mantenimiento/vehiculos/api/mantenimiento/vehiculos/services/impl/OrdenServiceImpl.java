@@ -509,6 +509,16 @@ public class OrdenServiceImpl implements OrdenService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public OrdenResponse actualizarOrden(Long id, OrdenRequest request) {
+        return null;
+    }
+
+    @Override
+    public OrdenResponse actualizarAsignacionMecanicos(AsignarMecanicoRequest request) {
+        return null;
+    }
+
     private void validarVehiculoDisponible(Vehiculo vehiculo) {
         if (vehiculo.getEstado() == EstadoVehiculo.EN_MANTENIMIENTO) {
             // Verificar si tiene órdenes abiertas o en proceso

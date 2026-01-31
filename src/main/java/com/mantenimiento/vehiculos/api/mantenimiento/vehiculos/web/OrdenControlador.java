@@ -49,6 +49,7 @@ public class OrdenControlador {
     }
 
     // agregar método de actualización de asignación permiso = ACTUALIZAR_ASIGNACION//
+    
 
     // ========== GESTIÓN DE ESTADOS DE MANTENIMIENTO ==========
     @PreAuthorize("hasAuthority('CAMBIAR_ESTADO_ORDEN')")
@@ -134,7 +135,7 @@ public class OrdenControlador {
 
 
     // ========== ENDPOINTS PARA CLIENTE ==========
-    //@PreAuthorize("hasAuthority('READ_ORDEN_PROPIA')")
+    @PreAuthorize("hasAuthority('READ_ORDEN_PROPIA')")
     @GetMapping("/mis-ordenes")
     public ResponseEntity<List<OrdenResponse>> obtenerMisOrdenes() {
         // El servicio debe obtener el cliente del usuario autenticado
@@ -142,7 +143,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
-    //@PreAuthorize("hasAuthority('READ_PAGO_PROPIO')")
+    @PreAuthorize("hasAuthority('READ_PAGO_PROPIO')")
     @GetMapping("/mis-pagos")
     public ResponseEntity<List<PagoResponse>> obtenerMisPagos() {
         List<PagoResponse> response = ordenService.obtenerPagosDelClienteAutenticado();
@@ -150,7 +151,7 @@ public class OrdenControlador {
     }
 
     // ========== ENDPOINTS PARA MECÁNICO ==========
-    //@PreAuthorize("hasAuthority('READ_ORDEN_PROPIA')")
+    @PreAuthorize("hasAuthority('READ_MIS_TRABAJOS')")
     @GetMapping("/mis-trabajos")
     public ResponseEntity<List<OrdenResponse>> obtenerMisTrabajos() {
         // El servicio debe obtener las órdenes asignadas al mecánico autenticado
