@@ -15,4 +15,6 @@ public interface PagoRepositorio extends JpaRepository<Pago, Long> {
     Optional<Pago> findByOrdenId(Long ordenId);
     
     boolean existsByOrdenId(Long ordenId);
+
+    List<Pago> findByClienteIdOrderByFechaPagoDesc(Long clienteId);
 }

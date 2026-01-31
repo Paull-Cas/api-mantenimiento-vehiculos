@@ -16,8 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface OrdenRepositorio extends JpaRepository<Orden, Long> {
-    
-    Optional<Orden> findByNumeroOrden(String numeroOrden);
+
     
     List<Orden> findByVehiculoId(Long vehiculoId);
     
@@ -31,8 +30,8 @@ public interface OrdenRepositorio extends JpaRepository<Orden, Long> {
     @Query("SELECT o FROM Orden o WHERE o.vehiculo.cliente.id = :clienteId")
     List<Orden> findByClienteId(@Param("clienteId") Long clienteId);
 
-    @Query("SELECT DISTINCT om.orden FROM OrdenMecanico om WHERE om.mecanico.id = :mecanicoId ORDER BY om.orden.fechaIngreso DESC")
-    List<Orden> findByVehiculoClienteIdOrderByFechaIngresoDesc(@Param("mecanicoId") Long mecanicoId);
+    @Query("SELECT o FROM Orden o WHERE o.vehiculo.cliente.id = :clienteId ORDER BY o.fechaIngreso DESC")
+    List<Orden> findByVehiculoClienteIdOrderByFechaIngresoDesc(@Param("clienteId") Long clienteId);
 
     @Query("SELECT DISTINCT om.orden FROM OrdenMecanico om WHERE om.mecanico.id = :mecanicoId ORDER BY om.orden.fechaIngreso DESC")
     List<Orden> findByMecanicoIdOrderByFechaIngresoDesc(@Param("mecanicoId") Long mecanicoId);

@@ -435,21 +435,12 @@ public class OrdenServiceImpl implements OrdenService {
     }
 
     @Override
-    public OrdenResponse calcularTotal(Long ordenId) {
-        Orden orden = ordenRepositorio.findById(ordenId)
-                .orElseThrow(() -> new OrdenNoEncontradaExcepcion("Orden no encontrada con ID: " + ordenId));
-        
-        calcularTotalInterno(orden);
-        return ordenMapper.toResponse(orden);
-    }
-
-    @Override
     public List<OrdenResponse> obtenerOrdenesDelClienteAutenticado() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         Usuario usuario = usuarioRepo.findUserEntityByUsername(username);
-        log.info("USUARIO =========" + usuario.getUsername());
+        log.info("USUARIO =========" + usuario.getUsername() + "con id: " + usuario.getId());
 
         if (usuario == null) {
             throw new RuntimeException("Usuario no encontrado");
@@ -457,13 +448,40 @@ public class OrdenServiceImpl implements OrdenService {
 
         Cliente cliente = clienteRepo.findAllByUsuarioId(usuario.getId());
 
+        log.info("Cliente con id: " + cliente.getId());
+
         if (cliente == null) {
             throw new RuntimeException("Cliente no encontrado");
         }
 
-        // Usar repositorio para evitar problemas con lazy loading
         return ordenRepositorio.findByVehiculoClienteIdOrderByFechaIngresoDesc(cliente.getId()).stream()
                 .map(ordenMapper::mapearOrden)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PagoResponse> obtenerPagosDelClienteAutenticado() {
+        // Obtener usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Buscar usuario
+        Usuario usuario = usuarioRepo.findUserEntityByUsername(username);
+        if (usuario == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+
+        // Buscar cliente asociado al usuario
+        Cliente cliente = clienteRepo.findAllByUsuarioId(usuario.getId());
+
+        if (cliente == null) {
+            throw new RuntimeException("Cliente no encontrado");
+        }
+
+        // Obtener pagos del cliente ordenados por fecha descendente
+        return pagoRepositorio.findByClienteIdOrderByFechaPagoDesc(cliente.getId()).stream()
+                .map(pagoMapper::toResponse)
                 .collect(Collectors.toList());
     }
 

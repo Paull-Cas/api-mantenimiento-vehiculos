@@ -31,10 +31,10 @@ public interface OrdenService {
     List<OrdenResponse> obtenerOrdenesPorCliente(Long clienteId);
     Page<OrdenResponse> buscarOrdenes(String keyword, int page, int size);
 
-    OrdenResponse calcularTotal(Long ordenId);
-
 
     List<OrdenResponse> obtenerOrdenesDelClienteAutenticado();
+    List<PagoResponse> obtenerPagosDelClienteAutenticado();
+
     List<OrdenResponse> obtenerOrdenesDelMecanicoAutenticado();
 
 
