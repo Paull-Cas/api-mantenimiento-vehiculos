@@ -137,7 +137,7 @@ public class OrdenControlador {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAuthority('READ_PAGOs_PROPIO')")
+    @PreAuthorize("hasAuthority('READ_PAGOS_PROPIO')")
     @GetMapping("/mis-pagos")
     public ResponseEntity<List<PagoResponse>> obtenerMisPagos() {
         List<PagoResponse> response = ordenService.obtenerPagosDelClienteAutenticado();
