@@ -36,6 +36,8 @@ public interface OrdenService {
     List<PagoResponse> obtenerPagosDelClienteAutenticado();
 
     List<OrdenResponse> obtenerOrdenesDelMecanicoAutenticado();
+    OrdenResponse actualizarOrden(Long id, OrdenRequest request);
+    OrdenResponse actualizarAsignacionMecanicos(AsignarMecanicoRequest request);
 
 
 }
