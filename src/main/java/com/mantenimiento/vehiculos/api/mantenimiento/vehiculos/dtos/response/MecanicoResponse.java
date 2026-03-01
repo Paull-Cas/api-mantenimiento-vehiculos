@@ -24,4 +24,5 @@ public class MecanicoResponse {
     private EstadoMecanico estado;
     private boolean activo;
     private LocalDate fechaIngreso;
+    private Long tallerId;
 }

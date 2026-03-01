@@ -30,13 +30,16 @@ public class Mecanico {
     private String telefono;
 
     @Enumerated(EnumType.STRING)
-    private EstadoMecanico estado = EstadoMecanico.DISPONIBLE;
+    private EstadoMecanico estado;
 
-    private boolean activo = true;
+    private boolean activo;
 
     private LocalDate fechaIngreso;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "taller_id", nullable = true)
+    private Taller taller;
 
     @OneToMany(mappedBy = "mecanico", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenMecanico> ordenesMecanicos;
 }
-

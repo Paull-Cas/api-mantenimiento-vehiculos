@@ -20,4 +20,5 @@ public class MecanicoRequest {
     private String especialidad;
     private String telefono;
     private LocalDate fechaIngreso;
+    private Long tallerId;
 }

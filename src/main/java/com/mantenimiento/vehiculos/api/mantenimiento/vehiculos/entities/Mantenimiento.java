@@ -34,4 +34,7 @@ public class Mantenimiento {
     @OneToMany(mappedBy = "mantenimiento", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenMantenimiento> ordenesMantenimiento;
+
+    @ManyToMany(mappedBy = "mantenimientos")
+    private List<Taller> talleres;
 }

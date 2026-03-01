@@ -31,6 +31,7 @@ public class MecanicoMapper {
                 .estado(mecanico.getEstado())
                 .activo(mecanico.isActivo())
                 .fechaIngreso(mecanico.getFechaIngreso())
+                .tallerId(mecanico.getTaller() != null ? mecanico.getTaller().getId() : null)
                 .build();
     }
 }

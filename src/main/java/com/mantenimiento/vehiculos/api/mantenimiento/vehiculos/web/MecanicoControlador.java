@@ -5,6 +5,7 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.dtos.response.Mec
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.enums.EstadoMecanico;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.MecanicoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MecanicoControlador {
 
-    private final MecanicoService mecanicoService;
+    @Autowired
+    private MecanicoService mecanicoService;
 
     @PreAuthorize("hasAuthority('CREATE_MECANICO')")
     @PostMapping
