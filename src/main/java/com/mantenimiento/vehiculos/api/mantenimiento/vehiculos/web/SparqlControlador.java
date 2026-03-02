@@ -18,10 +18,6 @@ public class SparqlController {
     private final SparqlService sparqlService;
     private final RdfExportService rdfExportService;
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  EXPORTACIÓN
-    // ════════════════════════════════════════════════════════════════════════════
-
     /**
      * POST /api/semantica/exportar
      * Re-exporta todos los datos de MySQL a Fuseki manualmente.
@@ -31,10 +27,6 @@ public class SparqlController {
         rdfExportService.exportarTodo();
         return ResponseEntity.ok("Datos exportados a Fuseki correctamente");
     }
-
-    // ════════════════════════════════════════════════════════════════════════════
-    //  CONSULTAS PREVIAS (mantenidas)
-    // ════════════════════════════════════════════════════════════════════════════
 
     /**
      * GET /api/semantica/catalogo
@@ -80,10 +72,6 @@ public class SparqlController {
     public ResponseEntity<String> getMecanicosPorEspecialidad(@RequestParam String especialidad) {
         return ResponseEntity.ok(sparqlService.getMecanicosPorEspecialidad(especialidad));
     }
-
-    // ════════════════════════════════════════════════════════════════════════════
-    //  CONSULTAS GEOGRÁFICAS SEMÁNTICAS (NUEVAS)
-    // ════════════════════════════════════════════════════════════════════════════
 
     /**
      * GET /api/semantica/geo/mecanico-en-ciudad?especialidad=frenos&ciudad=Cajamarca

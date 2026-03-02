@@ -26,16 +26,11 @@ public class JsonLdController {
     private static final String SCHEMA  = "https://schema.org/";
     private static final String DATA_NS = "http://taller.com/datos/";
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  CONTEXTO JSON-LD COMPARTIDO
-    // ════════════════════════════════════════════════════════════════════════════
-
     private Map<String, Object> contextoBase() {
         Map<String, Object> ctx = new LinkedHashMap<>();
         ctx.put("schema",  SCHEMA);
         ctx.put("taller",  "http://taller.com/ontologia/mantenimiento#");
         ctx.put("data",    DATA_NS);
-        // Aliases legibles para propiedades Schema.org frecuentes
         ctx.put("nombre",     "schema:name");
         ctx.put("direccion",  "schema:address");
         ctx.put("telefono",   "schema:telephone");
@@ -46,10 +41,6 @@ public class JsonLdController {
         ctx.put("descripcion","schema:description");
         return ctx;
     }
-
-    // ════════════════════════════════════════════════════════════════════════════
-    //  1. TALLERES
-    // ════════════════════════════════════════════════════════════════════════════
 
     /**
      * GET /api/jsonld/talleres
@@ -90,10 +81,6 @@ public class JsonLdController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  2. MECÁNICOS
-    // ════════════════════════════════════════════════════════════════════════════
-
     /**
      * GET /api/jsonld/mecanicos
      * Lista todos los mecánicos como JSON-LD (schema:Person).
@@ -133,10 +120,6 @@ public class JsonLdController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  3. MANTENIMIENTOS (SERVICIOS)
-    // ════════════════════════════════════════════════════════════════════════════
-
     /**
      * GET /api/jsonld/servicios
      * Lista todos los mantenimientos como JSON-LD (schema:Service).
@@ -175,9 +158,6 @@ public class JsonLdController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  4. CLIENTES
-    // ════════════════════════════════════════════════════════════════════════════
 
     /**
      * GET /api/jsonld/clientes/{id}
@@ -195,9 +175,6 @@ public class JsonLdController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  5. VEHÍCULOS
-    // ════════════════════════════════════════════════════════════════════════════
 
     /**
      * GET /api/jsonld/vehiculos/{id}
@@ -215,10 +192,6 @@ public class JsonLdController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  CONVERSORES PRIVADOS
-    // ════════════════════════════════════════════════════════════════════════════
-
     private Map<String, Object> tallerAJsonLd(Taller t) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("@type", List.of("schema:AutoRepair", "taller:Taller"));
@@ -228,7 +201,6 @@ public class JsonLdController {
         map.put("taller:ciudad",    t.getCiudad());
         map.put("taller:distrito",  t.getDistrito());
 
-        // Dirección estructurada
         if (t.getDireccion() != null || t.getCiudad() != null) {
             Map<String, Object> addr = new LinkedHashMap<>();
             addr.put("@type",              "schema:PostalAddress");
@@ -239,7 +211,6 @@ public class JsonLdController {
             map.put("direccion", addr);
         }
 
-        // Mecánicos embebidos (solo id y nombre para no anidar demasiado)
         if (t.getMecanicos() != null && !t.getMecanicos().isEmpty()) {
             List<Map<String, Object>> mecanicos = new ArrayList<>();
             for (Mecanico m : t.getMecanicos()) {
@@ -253,7 +224,6 @@ public class JsonLdController {
             map.put("empleados", mecanicos);
         }
 
-        // Servicios embebidos
         if (t.getMantenimientos() != null && !t.getMantenimientos().isEmpty()) {
             List<Map<String, Object>> servicios = new ArrayList<>();
             for (Mantenimiento mant : t.getMantenimientos()) {
@@ -286,7 +256,6 @@ public class JsonLdController {
         if (m.getFechaIngreso() != null)
             map.put("schema:startDate", m.getFechaIngreso().toString());
 
-        // Taller donde trabaja
         if (m.getTaller() != null) {
             Map<String, Object> tallerRef = new LinkedHashMap<>();
             tallerRef.put("@type", "schema:AutoRepair");
