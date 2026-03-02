@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/jsonld")
 @RequiredArgsConstructor
-public class JsonLdController {
+public class JsonLdControlador {
 
     private final TallerRepositorio     tallerRepository;
     private final MecanicoRepositorio   mecanicoRepository;

@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 @EnableWebSecurity
+//COMENTAR-DESCOMENTAR
 //@EnableMethodSecurity
 public class SecurityConfig {
 
@@ -36,13 +37,16 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
                     // EndPoints publicos
+                    //COMENTAR-DESCOMENTAR
                     //http.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
-
+                    //COMENTAR-DESCOMENTAR
                     //http.anyRequest().authenticated();
 
+                    //COMENTAR-DESCOMENTAR
                     http.anyRequest().permitAll();
                 })
-                // .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
+                //COMENTAR-DESCOMENTAR
+                //.addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
                 .build();
     }
 

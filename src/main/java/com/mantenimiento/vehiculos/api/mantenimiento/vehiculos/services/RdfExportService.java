@@ -13,21 +13,20 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class RdfExportService {
 
-    // ── Repositories ────────────────────────────────────────────────────────────
-    private final ClienteRepositorio       clienteRepository;
-    private final VehiculoRepositorio      vehiculoRepository;
-    private final OrdenRepositorio         ordenRepository;
-    private final MecanicoRepositorio      mecanicoRepository;
-    private final MantenimientoRepositorio mantenimientoRepository;
-    private final TallerRepositorio        tallerRepository;   // NUEVO
+    private final ClienteRepositorio             clienteRepository;
+    private final VehiculoRepositorio            vehiculoRepository;
+    private final OrdenRepositorio               ordenRepository;
+    private final OrdenMantenimientoRepositorio  ordenMantenimientoRepository;
+    private final OrdenMecanicoRepositorio       ordenMecanicoRepository;
+    private final MecanicoRepositorio            mecanicoRepository;
+    private final MantenimientoRepositorio       mantenimientoRepository;
+    private final TallerRepositorio              tallerRepository;
 
-    // ── Namespaces ───────────────────────────────────────────────────────────────
     /** Ontología OWL (clases y propiedades definidas en Protégé) */
     private static final String NS     = "http://taller.com/ontologia/mantenimiento#";
     /** Instancias de datos reales */
@@ -35,19 +34,13 @@ public class RdfExportService {
     /** Schema.org para interoperabilidad web semántica estándar */
     private static final String SCHEMA = "https://schema.org/";
 
-    // ── Fuseki ───────────────────────────────────────────────────────────────────
     private static final String FUSEKI_DATA_ENDPOINT =
             "http://localhost:3030/taller/data?graph=http://taller.com/datos";
-
-    // ════════════════════════════════════════════════════════════════════════════
-    //  MÉTODO PRINCIPAL
-    // ════════════════════════════════════════════════════════════════════════════
 
     @Transactional(readOnly = true)
     public void exportarTodo() {
         Model model = ModelFactory.createDefaultModel();
 
-        // Prefijos que aparecerán en el Turtle generado
         model.setNsPrefix("taller", NS);
         model.setNsPrefix("data",   DATA);
         model.setNsPrefix("schema", SCHEMA);
@@ -55,9 +48,11 @@ public class RdfExportService {
         exportarClientes(model);
         exportarVehiculos(model);
         exportarOrdenes(model);
+        exportarOrdenesMantenimiento(model);
+        exportarOrdenesMecanicos(model);
         exportarMecanicos(model);
         exportarMantenimientos(model);
-        exportarTalleres(model);   // NUEVO
+        exportarTalleres(model);
 
         cargarEnFuseki(model);
     }
@@ -90,23 +85,29 @@ public class RdfExportService {
             if (c instanceof ClienteNatural cn) {
                 r.addProperty(RDF.type, res(model, "ClienteNatural"));
                 r.addProperty(RDF.type, schemaRes(model, "Person"));
+
                 safeAdd(r, pNombre,   cn.getNombre());
                 safeAdd(r, pApellido, cn.getApellido());
                 safeAdd(r, pDni,      cn.getDni());
+
                 if (cn.getNombre() != null && cn.getApellido() != null)
                     r.addProperty(sName, cn.getNombre() + " " + cn.getApellido());
 
             } else if (c instanceof ClienteJuridico cj) {
                 r.addProperty(RDF.type, res(model, "ClienteJuridico"));
                 r.addProperty(RDF.type, schemaRes(model, "Organization"));
+
                 safeAdd(r, pRazon, cj.getRazonSocial());
                 safeAdd(r, pRuc,   cj.getRuc());
+
                 safeAdd(r, sName,  cj.getRazonSocial());
+
             }
 
             safeAdd(r, pTelefono,  c.getTelefono());
             safeAdd(r, pCorreo,    c.getCorreoElectronico());
             safeAdd(r, pDireccion, c.getDireccion());
+
             safeAdd(r, sEmail,     c.getCorreoElectronico());
             safeAdd(r, sPhone,     c.getTelefono());
             safeAdd(r, sAddress,   c.getDireccion());
@@ -135,10 +136,10 @@ public class RdfExportService {
             safeAdd(r, pPlaca,  v.getPlaca());
             safeAdd(r, pMarca,  v.getMarca());
             safeAdd(r, pModelo, v.getModelo());
+
             r.addProperty(pAnio, model.createTypedLiteral(v.getAño()));
             r.addProperty(pKm,   model.createTypedLiteral(v.getKilometraje()));
-            if (v.getEstado() != null)
-                r.addProperty(pEstado, v.getEstado().toString());
+            r.addProperty(pEstado, v.getEstado().toString());
 
             if (v.getMarca() != null && v.getModelo() != null)
                 r.addProperty(sName, v.getMarca() + " " + v.getModelo());
@@ -178,6 +179,114 @@ public class RdfExportService {
             if (o.getVehiculo() != null)
                 r.addProperty(pVehiculo,
                         model.createResource(DATA + "vehiculo/" + o.getVehiculo().getId()));
+        }
+    }
+
+    // ── OrdenesMantenimiento ─────────────────────────────────────────────────────
+    //  Propiedades que usa historialMantenimientosPorPlaca() en SparqlService:
+    //    taller:OrdenMantenimiento
+    //    taller:perteneceAOrden       → Orden
+    //    taller:mantenimientoNombre   → nombre del mantenimiento (literal)
+    //    taller:estado                → EstadoOrdenMantenimiento
+    //    taller:costo                 → BigDecimal
+    //    taller:fechaInicio           → LocalDate
+    //    taller:fechaFin              → LocalDate
+
+    private void exportarOrdenesMantenimiento(Model model) {
+        Property pPerteneceAOrden      = prop(model, "perteneceAOrden");
+        Property pMantenimientoNombre  = prop(model, "mantenimientoNombre");
+        Property pEstado               = prop(model, "estado");
+        Property pCosto                = prop(model, "costo");
+        Property pFechaInicio          = prop(model, "fechaInicio");
+        Property pFechaFin             = prop(model, "fechaFin");
+        Property pDescripcionProblema  = prop(model, "descripcionProblema");
+
+        // Schema.org equivalentes
+        Property sPrice     = schemaProp(model, "price");
+        Property sStartDate = schemaProp(model, "startDate");
+        Property sEndDate   = schemaProp(model, "endDate");
+
+        for (OrdenMantenimiento om : ordenMantenimientoRepository.findAll()) {
+            Resource r = model.createResource(DATA + "ordenmantenimiento/" + om.getId());
+            r.addProperty(RDF.type, res(model, "OrdenMantenimiento"));
+
+            // Relación con la Orden padre
+            if (om.getOrden() != null)
+                r.addProperty(pPerteneceAOrden,
+                        model.createResource(DATA + "orden/" + om.getOrden().getId()));
+
+            // Nombre del mantenimiento como literal (lo que usa el SPARQL con ?mantenimientoNombre)
+            if (om.getMantenimiento() != null && om.getMantenimiento().getNombre() != null)
+                r.addProperty(pMantenimientoNombre, om.getMantenimiento().getNombre());
+
+            // Estado
+            if (om.getEstado() != null)
+                r.addProperty(pEstado, om.getEstado().toString());
+
+            // Costo
+            if (om.getCosto() != null) {
+                r.addProperty(pCosto,  model.createTypedLiteral(om.getCosto().floatValue()));
+                r.addProperty(sPrice,  model.createTypedLiteral(om.getCosto().floatValue()));
+            }
+
+            // Fechas
+            if (om.getFechaInicio() != null) {
+                r.addProperty(pFechaInicio, om.getFechaInicio().toString());
+                r.addProperty(sStartDate,   om.getFechaInicio().toString());
+            }
+            if (om.getFechaFin() != null) {
+                r.addProperty(pFechaFin, om.getFechaFin().toString());
+                r.addProperty(sEndDate,  om.getFechaFin().toString());
+            }
+
+            // Descripción del problema (bonus, útil para el historial)
+            safeAdd(r, pDescripcionProblema, om.getDescripcionProblema());
+        }
+    }
+
+    // ── OrdenesMecanicos ─────────────────────────────────────────────────────────
+    //  Propiedades que usa historialMantenimientosPorPlaca() en SparqlService:
+    //    taller:OrdenMecanico
+    //    taller:perteneceAOrden  → Orden
+    //    taller:tieneMecanico    → Mecanico (recurso, para navegar a nombre/apellido)
+
+    private void exportarOrdenesMecanicos(Model model) {
+        Property pPerteneceAOrden = prop(model, "perteneceAOrden");
+        Property pTieneMecanico   = prop(model, "tieneMecanico");
+        Property pEstado          = prop(model, "estado");
+        Property pFechaAsignacion = prop(model, "fechaAsignacion");
+        Property pFechaLiberacion = prop(model, "fechaLiberacion");
+
+        Property sStartDate = schemaProp(model, "startDate");
+        Property sEndDate   = schemaProp(model, "endDate");
+
+        for (OrdenMecanico omc : ordenMecanicoRepository.findAll()) {
+            Resource r = model.createResource(DATA + "ordenmecanico/" + omc.getId());
+            r.addProperty(RDF.type, res(model, "OrdenMecanico"));
+
+            // Relación con la Orden padre
+            if (omc.getOrden() != null)
+                r.addProperty(pPerteneceAOrden,
+                        model.createResource(DATA + "orden/" + omc.getOrden().getId()));
+
+            // Relación con el Mecánico (recurso, el SPARQL navega a taller:nombre y taller:apellido)
+            if (omc.getMecanico() != null)
+                r.addProperty(pTieneMecanico,
+                        model.createResource(DATA + "mecanico/" + omc.getMecanico().getId()));
+
+            // Estado de la asignación
+            if (omc.getEstado() != null)
+                r.addProperty(pEstado, omc.getEstado().toString());
+
+            // Fechas
+            if (omc.getFechaAsignacion() != null) {
+                r.addProperty(pFechaAsignacion, omc.getFechaAsignacion().toString());
+                r.addProperty(sStartDate,       omc.getFechaAsignacion().toString());
+            }
+            if (omc.getFechaLiberacion() != null) {
+                r.addProperty(pFechaLiberacion, omc.getFechaLiberacion().toString());
+                r.addProperty(sEndDate,         omc.getFechaLiberacion().toString());
+            }
         }
     }
 
@@ -235,6 +344,7 @@ public class RdfExportService {
 
         for (Mantenimiento m : mantenimientoRepository.findAll()) {
             Resource r = model.createResource(DATA + "mantenimiento/" + m.getId());
+
             r.addProperty(RDF.type, res(model, "Mantenimiento"));
             r.addProperty(RDF.type, schemaRes(model, "Service"));
 
@@ -296,7 +406,6 @@ public class RdfExportService {
                 r.addProperty(sAddress, addr);
             }
 
-            // ── Relación Taller → Mecánicos ──────────────────────────────────────
             if (t.getMecanicos() != null) {
                 for (Mecanico m : t.getMecanicos()) {
                     Resource mecRes = model.createResource(DATA + "mecanico/" + m.getId());
@@ -305,7 +414,6 @@ public class RdfExportService {
                 }
             }
 
-            // ── Relación Taller → Mantenimientos ─────────────────────────────────
             if (t.getMantenimientos() != null) {
                 for (Mantenimiento mant : t.getMantenimientos()) {
                     Resource mantRes = model.createResource(DATA + "mantenimiento/" + mant.getId());
@@ -316,9 +424,6 @@ public class RdfExportService {
         }
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  CARGA EN FUSEKI
-    // ════════════════════════════════════════════════════════════════════════════
 
     private void cargarEnFuseki(Model model) {
         try {
@@ -354,10 +459,6 @@ public class RdfExportService {
         }
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  HELPERS
-    // ════════════════════════════════════════════════════════════════════════════
-
     private Property prop(Model m, String local) {
         return m.createProperty(NS + local);
     }
@@ -374,7 +475,6 @@ public class RdfExportService {
         return m.createResource(SCHEMA + local);
     }
 
-    /** Agrega una literal solo si el valor no es null ni vacío */
     private void safeAdd(Resource r, Property p, String value) {
         if (value != null && !value.isBlank()) {
             r.addProperty(p, value);

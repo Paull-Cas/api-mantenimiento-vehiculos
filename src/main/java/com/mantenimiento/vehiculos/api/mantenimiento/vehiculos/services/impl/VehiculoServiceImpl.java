@@ -12,8 +12,13 @@ import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.mappers.VehiculoM
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.ClienteRepositorio;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.UsuarioRepository;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.repositories.VehiculoRepositorio;
+import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.FusekiSyncService;
 import com.mantenimiento.vehiculos.api.mantenimiento.vehiculos.services.VehiculoService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,21 +48,29 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Autowired
     private UsuarioRepository usuarioRepo;
 
+    @Autowired
+    private FusekiSyncService fusekiSyncService;
+
+    private static final String NS = "http://taller.com/ontologia/mantenimiento#";
+    private static final String DATA = "http://taller.com/datos/";
+    private static final String SCHEMA = "https://schema.org/";
+
     @Override
     public VehiculoResponse saveVehiculo(VehiculoRequest vehiculoDto) throws ClienteNoEncontradoExcepcion {
         log.info("Guardando vehiculo");
         Cliente cliente = clienteRepo.findById(vehiculoDto.getPropietarioId()).orElseThrow(() ->
                 new ClienteNoEncontradoExcepcion("Cliente no encontrado con ID: " + vehiculoDto.getPropietarioId()));
-        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto, cliente);  // Usando vehiculoMapper
+        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto, cliente);
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
-        return vehiculoMapper.mapearVheiculo(vheculoGuardado);  // Usando vehiculoMapper
+        sincronizarVehiculo(vheculoGuardado);
+        return vehiculoMapper.mapearVheiculo(vheculoGuardado);
     }
 
     @Override
     public VehiculoResponse getVehiculo(Long vehiculoId) throws VehiculoNoEncontradoExcepcion {
         Vehiculo vehiculo = vehiculoRepositorio.findById(vehiculoId).orElseThrow(() ->
                 new VehiculoNoEncontradoExcepcion("Vehiculo no encontrado con ID: " + vehiculoId));
-        return vehiculoMapper.mapearVheiculo(vehiculo);  // Usando vehiculoMapper
+        return vehiculoMapper.mapearVheiculo(vehiculo);
     }
 
     @Override
@@ -65,10 +78,11 @@ public class VehiculoServiceImpl implements VehiculoService {
         log.info("Vehiculo Actualizado");
         Cliente cliente = clienteRepo.findById(vehiculoDto.getPropietarioId()).orElseThrow(() ->
                 new ClienteNoEncontradoExcepcion("Cliente no encontrado con ID: " + vehiculoDto.getPropietarioId()));
-        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto, cliente);// Usando vehiculoMapper
+        Vehiculo vehiculo = vehiculoMapper.mapearVheiculoDto(vehiculoDto, cliente);
         vehiculo.setId(id);
         Vehiculo vheculoGuardado = vehiculoRepositorio.save(vehiculo);
-        return vehiculoMapper.mapearVheiculo(vheculoGuardado);  // Usando vehiculoMapper
+        sincronizarVehiculo(vheculoGuardado);
+        return vehiculoMapper.mapearVheiculo(vheculoGuardado);
     }
 
     @Override
@@ -77,6 +91,7 @@ public class VehiculoServiceImpl implements VehiculoService {
             throw new VehiculoNoEncontradoExcepcion("Vehiculo no encontrado");
         }
         vehiculoRepositorio.deleteById(vehiculoId);
+        fusekiSyncService.deleteEntity(DATA + "vehiculo/" + vehiculoId);
         log.info("Vehiculo eliminado", vehiculoId);
     }
 
@@ -110,20 +125,17 @@ public class VehiculoServiceImpl implements VehiculoService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-        // Buscar el usuario por username
         Usuario usuario = usuarioRepo.findUserEntityByUsername(username);
         log.info("USUARIO =========" + usuario.getUsername());
         if (usuario == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
 
-        // Buscar el cliente por usuarioId
         Cliente cliente = clienteRepo.findAllByUsuarioId(usuario.getId());
 
         return vehiculoRepositorio.findByClienteId(cliente.getId()).stream()
                 .map(vehiculoMapper::mapearVheiculo)
                 .collect(Collectors.toList());
-
     }
 
     @Override
@@ -144,5 +156,31 @@ public class VehiculoServiceImpl implements VehiculoService {
         return vehiculoPageReponse;
     }
 
+    private void sincronizarVehiculo(Vehiculo v) {
+        Model model = ModelFactory.createDefaultModel();
+        String uri = DATA + "vehiculo/" + v.getId();
+        Resource r = model.createResource(uri);
 
+        r.addProperty(RDF.type, model.createResource(NS + "Vehiculo"));
+        r.addProperty(RDF.type, model.createResource(SCHEMA + "Vehicle"));
+
+        if(v.getPlaca() != null) r.addProperty(model.createProperty(NS + "placa"), v.getPlaca());
+        if(v.getMarca() != null) r.addProperty(model.createProperty(NS + "marca"), v.getMarca());
+        if(v.getModelo() != null) r.addProperty(model.createProperty(NS + "modelo"), v.getModelo());
+
+        r.addProperty(model.createProperty(NS + "año"), model.createTypedLiteral(v.getAño()));
+        r.addProperty(model.createProperty(NS + "kilometraje"), model.createTypedLiteral(v.getKilometraje()));
+        if (v.getEstado() != null) r.addProperty(model.createProperty(NS + "estado"), v.getEstado().toString());
+
+        if (v.getMarca() != null && v.getModelo() != null) {
+            r.addProperty(model.createProperty(SCHEMA + "name"), v.getMarca() + " " + v.getModelo());
+        }
+
+        if (v.getCliente() != null) {
+            r.addProperty(model.createProperty(NS + "perteneceACliente"),
+                    model.createResource(DATA + "cliente/" + v.getCliente().getId()));
+        }
+
+        fusekiSyncService.syncEntity(uri, model);
+    }
 }

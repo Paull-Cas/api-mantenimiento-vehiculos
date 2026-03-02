@@ -23,21 +23,15 @@ public class SparqlService {
 
     private static final String GRAPH = "FROM <http://taller.com/datos> ";
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  MÉTODO AUXILIAR: EJECUTAR CONSULTA
-    // ════════════════════════════════════════════════════════════════════════════
-
     public ResultSet ejecutarConsulta(String sparql) {
         String consulta = PREFIX + sparql;
         QueryExecution qe = QueryExecutionFactory.sparqlService(FUSEKI_URL, consulta);
         return qe.execSelect();
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  CONSULTAS PREVIAS (mantenidas y mejoradas)
-    // ════════════════════════════════════════════════════════════════════════════
-
     public String getCatalogoMantenimientos() {
+        long inicio = System.currentTimeMillis();
+
         String sparql = "SELECT ?nombre ?precio ?tipo ?descripcion " +
                 GRAPH +
                 "WHERE { " +
@@ -58,6 +52,12 @@ public class SparqlService {
                 sb.append(" | Tipo: ").append(sol.getLiteral("tipo").getString());
             sb.append("\n");
         }
+
+        long fin = System.currentTimeMillis();
+        System.out.println("╔══════════════════════════════════════════");
+        System.out.println("║ SPARQL - getCatalogoMantenimientos: " + (fin - inicio) + " ms");
+        System.out.println("╚══════════════════════════════════════════");
+
         return sb.toString();
     }
 
@@ -119,10 +119,12 @@ public class SparqlService {
     }
 
     public String getHistorialPorCliente(Long clienteId) {
+        long inicio = System.currentTimeMillis();
+
         String sparql = "SELECT ?numeroOrden ?estado ?placa ?marca " +
                 GRAPH +
                 "WHERE { " +
-                "  ?vehiculo taller:perteneceACliente data:cliente/" + clienteId + " ; " +
+                "  ?vehiculo taller:perteneceACliente <http://taller.com/datos/cliente/" + clienteId + "> ; " +
                 "            taller:placa ?placa ; " +
                 "            taller:marca ?marca . " +
                 "  ?orden a taller:Orden ; " +
@@ -141,6 +143,12 @@ public class SparqlService {
                     .append(" | Marca: ").append(sol.getLiteral("marca").getString())
                     .append("\n");
         }
+
+        long fin = System.currentTimeMillis();
+        System.out.println("╔══════════════════════════════════════════");
+        System.out.println("║ SPARQL - getHistorialPorCliente (id=" + clienteId + "): " + (fin - inicio) + " ms");
+        System.out.println("╚══════════════════════════════════════════");
+
         return sb.toString();
     }
 
@@ -169,10 +177,6 @@ public class SparqlService {
         return sb.toString();
     }
 
-    // ════════════════════════════════════════════════════════════════════════════
-    //  CONSULTAS GEOGRÁFICAS SEMÁNTICAS (NUEVAS)
-    // ════════════════════════════════════════════════════════════════════════════
-
     /**
      * CONSULTA 1 — "mecánico de frenos en Cajamarca"
      * Busca mecánicos por especialidad + ciudad del taller donde trabajan.
@@ -184,24 +188,24 @@ public class SparqlService {
                 "       ?tallerNombre ?ciudad ?distrito ?direccion ?horario " +
                 GRAPH +
                 "WHERE { " +
-                // El mecánico tiene especialidad que contiene el término buscado
                 "  ?mecanico a taller:Mecanico ; " +
                 "            taller:nombre ?nombre ; " +
                 "            taller:apellido ?apellido ; " +
                 "            taller:especialidad ?especialidad ; " +
                 "            taller:estado ?estado ; " +
-                // Debe trabajar en un taller
                 "            taller:trabajaEn ?taller . " +
-                // El taller debe estar en la ciudad buscada
                 "  ?taller taller:nombre ?tallerNombre ; " +
-                "          taller:ciudad ?ciudad ; " +
-                "          taller:direccion ?direccion . " +
-                "  OPTIONAL { ?mecanico taller:telefono ?telefono } " +
-                "  OPTIONAL { ?taller   taller:distrito ?distrito } " +
-                "  OPTIONAL { ?taller   taller:horario  ?horario  } " +
-                // Filtros semánticos: busca coincidencias parciales, sin distinguir mayúsculas
+                "          taller:ciudad ?ciudad . " +
+                "  OPTIONAL { ?mecanico taller:telefono  ?telefono  } " +
+                "  OPTIONAL { ?taller   taller:distrito  ?distrito  } " +
+                "  OPTIONAL { ?taller   taller:direccion ?direccion } " +
+                "  OPTIONAL { ?taller   taller:horario   ?horario   } " +
                 "  FILTER(CONTAINS(LCASE(STR(?especialidad)), LCASE(\"" + especialidad + "\"))) " +
-                "  FILTER(CONTAINS(LCASE(STR(?ciudad)),       LCASE(\"" + ciudad + "\"))) " +
+                // Busca por ciudad O por distrito — así "Baños del Inca" funciona
+                "  FILTER( " +
+                "    CONTAINS(LCASE(STR(?ciudad)),   LCASE(\"" + ciudad + "\")) || " +
+                "    CONTAINS(LCASE(STR(?distrito)), LCASE(\"" + ciudad + "\")) " +
+                "  ) " +
                 "} ORDER BY ?nombre";
 
         return ejecutarComoLista(sparql,
@@ -220,23 +224,24 @@ public class SparqlService {
                 "       ?mantenimientoNombre ?descripcion ?precio ?tipo " +
                 GRAPH +
                 "WHERE { " +
-                // El taller ofrece un mantenimiento
                 "  ?taller a taller:Taller ; " +
                 "          taller:nombre ?tallerNombre ; " +
                 "          taller:ciudad ?ciudad ; " +
                 "          taller:ofreceMantenimiento ?mantenimiento . " +
-                // El mantenimiento tiene el tipo buscado
                 "  ?mantenimiento taller:nombre ?mantenimientoNombre ; " +
                 "                 taller:precioMinimo ?precio . " +
-                "  OPTIONAL { ?taller       taller:distrito   ?distrito    } " +
-                "  OPTIONAL { ?taller       taller:direccion  ?direccion   } " +
-                "  OPTIONAL { ?taller       taller:horario    ?horario     } " +
+                "  OPTIONAL { ?taller       taller:distrito    ?distrito    } " +
+                "  OPTIONAL { ?taller       taller:direccion   ?direccion   } " +
+                "  OPTIONAL { ?taller       taller:horario     ?horario     } " +
                 "  OPTIONAL { ?mantenimiento taller:descripcion ?descripcion } " +
                 "  OPTIONAL { ?mantenimiento taller:tipo        ?tipo        } " +
-                // Filtros semánticos
                 "  FILTER(CONTAINS(LCASE(STR(?mantenimientoNombre)), LCASE(\"" + tipoMantenimiento + "\")) || " +
                 "         CONTAINS(LCASE(STR(?tipo)),                LCASE(\"" + tipoMantenimiento + "\"))) " +
-                "  FILTER(CONTAINS(LCASE(STR(?ciudad)),              LCASE(\"" + ciudad + "\"))) " +
+                // Busca por ciudad O por distrito
+                "  FILTER( " +
+                "    CONTAINS(LCASE(STR(?ciudad)),   LCASE(\"" + ciudad + "\")) || " +
+                "    CONTAINS(LCASE(STR(?distrito)), LCASE(\"" + ciudad + "\")) " +
+                "  ) " +
                 "} ORDER BY ?precio";
 
         return ejecutarComoLista(sparql,
@@ -264,9 +269,12 @@ public class SparqlService {
                 "  OPTIONAL { ?taller taller:distrito  ?distrito  } " +
                 "  OPTIONAL { ?taller taller:direccion ?direccion } " +
                 "  OPTIONAL { ?taller taller:horario   ?horario   } " +
-                // Solo mecánicos disponibles
                 "  FILTER(?estado = \"DISPONIBLE\") " +
-                "  FILTER(CONTAINS(LCASE(STR(?ciudad)), LCASE(\"" + ciudad + "\"))) " +
+                // Busca por ciudad O por distrito
+                "  FILTER( " +
+                "    CONTAINS(LCASE(STR(?ciudad)),   LCASE(\"" + ciudad + "\")) || " +
+                "    CONTAINS(LCASE(STR(?distrito)), LCASE(\"" + ciudad + "\")) " +
+                "  ) " +
                 "} ORDER BY ?tallerNombre ?mecNombre";
 
         return ejecutarComoLista(sparql,
@@ -282,12 +290,15 @@ public class SparqlService {
     public List<Map<String, String>> busquedaGeograficaAvanzada(
             String especialidad, String ciudad, String estado) {
 
-        // Construcción dinámica de filtros opcionales
         String filtroEspecialidad = (especialidad != null && !especialidad.isBlank())
                 ? "FILTER(CONTAINS(LCASE(STR(?especialidad)), LCASE(\"" + especialidad + "\"))) "
                 : "";
+        // Busca por ciudad O por distrito en la búsqueda avanzada también
         String filtroCiudad = (ciudad != null && !ciudad.isBlank())
-                ? "FILTER(CONTAINS(LCASE(STR(?ciudad)), LCASE(\"" + ciudad + "\"))) "
+                ? "FILTER( " +
+                "  CONTAINS(LCASE(STR(?ciudad)),   LCASE(\"" + ciudad + "\")) || " +
+                "  CONTAINS(LCASE(STR(?distrito)), LCASE(\"" + ciudad + "\")) " +
+                ") "
                 : "";
         String filtroEstado = (estado != null && !estado.isBlank())
                 ? "FILTER(?estado = \"" + estado.toUpperCase() + "\") "

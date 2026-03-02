@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/semantica")
 @RequiredArgsConstructor
-public class SparqlController {
+public class SparqlControlador {
 
     private final SparqlService sparqlService;
     private final RdfExportService rdfExportService;
