@@ -3,8 +3,8 @@ spring:
     name: api.mantenimiento.vehiculos
 
   datasource:
-    url: jdbc:mysql://localhost:3306/bd_mantenimiento_vehiculos?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/bd_mantenimiento_vehiculos?createDatabaseIfNotExist=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:

@@ -1,85 +1,96 @@
-Aquí tienes un ejemplo de `README.md` claro y profesional para tu proyecto:
+# API de mantenimiento de vehículos
 
----
+API REST desarrollada en un **proyecto académico grupal de Ingeniería de Sistemas** para gestionar clientes, vehículos, talleres, mecánicos, mantenimientos, órdenes de trabajo y pagos.
 
-# 🧰 Proyecto API Mantenimiento Vehículos
+## Funcionalidades
 
-## 📋 Descripción
+- Gestión de clientes naturales y jurídicos, vehículos, talleres y mecánicos.
+- Registro de órdenes, asignación de mecánicos y seguimiento de estados.
+- Registro de pagos asociados a las órdenes de trabajo.
+- Componentes de registro e inicio de sesión con Spring Security y JWT.
+- Exportación RDF y consultas SPARQL con Apache Jena y Fuseki.
+- Colección de Postman para revisar y probar los endpoints.
 
-Este proyecto es una **API REST** desarrollada en **Spring Boot** para la gestión de mantenimientos de vehículos. Permite administrar clientes, vehículos, mantenimientos, y otros recursos relacionados mediante distintos endpoints que pueden probarse fácilmente con **Postman**.
+## Herramientas
 
----
+| Tecnología | Versión o uso |
+| --- | --- |
+| Java | 25 |
+| Spring Boot | 3.5.6 |
+| Spring Web, Spring Data JPA, Spring Security y Bean Validation | Versiones administradas por Spring Boot |
+| Auth0 java-jwt | 4.5.0 |
+| Apache Jena | 4.10.0 |
+| MySQL | Persistencia relacional |
+| Maven y Postman | Construcción y pruebas manuales |
 
-## ⚙️ Configuración Inicial
+## Arquitectura y organización
 
-### 1️⃣ Cambiar la REDACTED_CONFIG_VALUE de la base de datos MySQL
+El backend utiliza **arquitectura por capas** en una aplicación Spring Boot:
 
-Antes de ejecutar la aplicación por primera vez, asegúrate de configurar correctamente las credenciales de tu base de datos.
-
-Abre el archivo:
-`src/main/resources/application.yml`
-y reemplaza la REDACTED_CONFIG_VALUE por la tuya:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/mantenimiento_vehiculos
-    username: root
-    password: ${SPRING_DATASOURCE_PASSWORD}
+```text
+src/main/java/.../
+├── web/            Controladores REST
+├── dtos/           Datos de entrada y salida
+├── mappers/        Conversión entre entidades y DTOs
+├── services/       Lógica de negocio e integración semántica
+├── repositories/   Acceso a datos con JPA
+├── entities/       Modelo del dominio
+├── enums/          Estados y tipos
+├── exceptions/     Excepciones del dominio
+├── config/         Configuración de seguridad
+└── util/           Utilidades JWT
 ```
 
-> ⚠️ No compartas ni subas tu REDACTED_CONFIG_VALUE real al repositorio.
+## Ejecución local
 
----
+Requisitos: JDK 25, MySQL y Maven o el wrapper incluido. Las funciones semánticas utilizan Apache Jena Fuseki local; sus rutas están definidas en los servicios de integración.
 
-### 2️⃣ Primera ejecución
+Configurar estas variables en el entorno o en el IDE:
 
-Ejecuta el proyecto desde tu IDE o con el siguiente comando en terminal:
+| Variable | Contenido |
+| --- | --- |
+| `SPRING_DATASOURCE_URL` | URL JDBC de la base MySQL local |
+| `SPRING_DATASOURCE_USERNAME` | Usuario de desarrollo |
+| `SPRING_DATASOURCE_PASSWORD` | Contraseña de desarrollo |
+| `SECURITY_JWT_KEY_PRIVATE` | Clave HMAC propia del entorno de prueba, de al menos 32 bytes |
 
-```bash
-mvn spring-boot:run
+El archivo `.env.example` enumera las variables. Spring Boot no carga un archivo `.env` automáticamente: hay que exportarlas o configurarlas en el IDE.
+
+En Windows:
+
+```powershell
+.\mvnw.cmd spring-boot:run
 ```
 
-Esto permitirá que se creen automáticamente las tablas en la base de datos y se verifique la correcta conexión.
+En Linux/macOS:
 
----
-
-### 3️⃣ Comentar la configuración de aplicación
-
-Después de la **primera ejecución**, comenta la sección del `application.yml` (o `application.properties`) relacionada con la inicialización automática de datos o generación del esquema, para evitar reinicializaciones no deseadas.
-
-Ejemplo:
-
-```yaml
-# spring.jpa.hibernate.ddl-auto=update
+```sh
+./mvnw spring-boot:run
 ```
 
----
+La API utiliza el puerto 8080. La configuración académica usa `ddl-auto: update` y no incluye carga automática de registros personales o cuentas de ejemplo.
 
-## 🧪 Pruebas de la API con Postman
+## Revisar y probar el código
 
-### 4️⃣ Importar la colección Postman
+1. Explorar `web/` para conocer rutas, métodos y validaciones.
+2. Seguir cada operación hacia `services/`, `mappers/` y `repositories/`.
+3. Importar `Proyecto API Mantenimiento Vehiculos  Completo.postman_collection.json` en Postman, ajustar las URLs locales y crear registros ficticios propios.
+4. Para las solicitudes de autenticación, definir `demo_password` y `jwt_token` en un entorno local de Postman. Los roles requeridos deben existir en la base de desarrollo.
 
-Para probar los endpoints, abre **Postman** y haz lo siguiente:
+| Método | Ruta | Operación |
+| --- | --- | --- |
+| POST | `/auth/sign-up` | Registrar un usuario |
+| POST | `/auth/log-in` | Iniciar sesión |
+| GET | `/api/vehiculos/Vehiculos` | Listar vehículos |
+| GET | `/api/vehiculos/Vehiculo/{id}` | Consultar un vehículo |
+| POST | `/api/vehiculos/Vehiculo` | Crear un vehículo |
+| GET | `/api/taller` | Listar talleres |
+| GET | `/api/mecanicos` | Listar mecánicos |
+| GET | `/api/mantenimiento-vehiculos` | Listar mantenimientos |
+| GET | `/api/semantica/catalogo` | Consultar el catálogo semántico |
 
-1. Dirígete a **File → Import**
-2. Selecciona el archivo:
+## Participación y estado
 
-   ```
-   Proyecto API Mantenimiento Vehiculos.postman_collection.json
-   ```
-3. Se importarán todos los endpoints disponibles del proyecto.
-4. Ejecuta las peticiones según corresponda (GET, POST, PUT, DELETE).
+Desarrollé esta API como parte de un equipo en el curso Software III. El historial conserva las contribuciones de **Paull-Cas, DanielaM202, Jhordan27 y Dany7mx**.
 
----
-
-## 🚀 Requisitos
-
-* **Java 25**
-* **Maven 3.8+**
-* **MySQL 8+**
-* **Postman** (para probar la API)
-
----
-
-¿Quieres que le agregue también una sección con ejemplos de endpoints (por ejemplo `/clientes`, `/vehiculos`, `/mantenimientos`) para que quede más completo?
+Es una entrega académica disponible para revisar el código. La configuración actual permite todas las rutas (`permitAll`); los componentes JWT están implementados, pero la autorización completa de endpoints está pendiente. Utilizar únicamente en un entorno local de pruebas.
